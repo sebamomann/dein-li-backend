@@ -42,5 +42,5 @@ export class User {
     @CreateDateColumn()
     iat: Date;
 
-    token: string;
+    session: { refreshToken: string, token: string };
 }

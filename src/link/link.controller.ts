@@ -1,4 +1,4 @@
-import {Body, Controller, HttpStatus, Post, Res, UseGuards} from '@nestjs/common';
+import {Body, Controller, HttpStatus, Param, Post, Res, UseGuards, UseInterceptors} from '@nestjs/common';
 
 import {Usr} from '../user/user.decorator';
 import {User} from "../user/user.entity";
@@ -9,8 +9,10 @@ import {LinkService} from "./link.service";
 import {AuthGuard} from '@nestjs/passport';
 
 import {Response} from 'express';
+import {BusinessToHttpExceptionInterceptor} from "../interceptor/BusinessToHttpException.interceptor";
 
 @Controller('link')
+@UseInterceptors(BusinessToHttpExceptionInterceptor)
 export class LinkController {
 
     constructor(private linkService: LinkService) {
@@ -31,13 +33,14 @@ export class LinkController {
             });
     }
 
-    @Post('version')
+    @Post(':short/version')
     @UseGuards(AuthGuard('jwt'))
     newVersion(@Usr() user: User,
+               @Param('short') short: string,
                @Body() link: Link,
                @Res() res: Response,) {
         return this.linkService
-            .newVersion(link, user)
+            .newVersion(link, short, user)
             .then(tLink => {
                 res.status(HttpStatus.CREATED).json(tLink);
             })

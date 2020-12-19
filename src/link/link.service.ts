@@ -1,16 +1,22 @@
 import {Injectable} from '@nestjs/common';
 import {Link} from "./link.entity";
 import {User} from "../user/user.entity";
-
-import validUrl from "valid-url";
 import {InvalidAttributesException} from "../exceptions/InvalidAttributesException";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 
-import randomstring from "randomstring";
 import {AlreadyUsedException} from "../exceptions/AlreadyUsedException";
 import {EntityNotFoundException} from "../exceptions/EntityNotFoundException";
 import {InsufficientPermissionsException} from "../exceptions/InsufficientPermissionsException";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const validUrl = require("valid-url");
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const linkMapper = require("./link.mapper");
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const randomstring = require("randomstring");
 
 @Injectable()
 export class LinkService {
@@ -27,6 +33,7 @@ export class LinkService {
     public async create(link: Link, user: User): Promise<Link> {
         let linkToDb = new Link();
 
+
         if (!validUrl.isUri(link.original)) {
             throw new InvalidAttributesException(null,
                 "Given URL can not be processed. Specify a valid URL", [
@@ -39,15 +46,14 @@ export class LinkService {
 
         linkToDb.original = link.original;
         linkToDb.creator = user;
+        linkToDb.short = await this.linkGenerationAndDuplicateCheck(link.short);
 
         linkToDb = await this.linkRepository.save(linkToDb);
 
-        linkToDb.short = await this.linkGenerationAndDuplicateCheck(link.short);
-
-        return linkToDb;
+        return linkMapper.basic(linkToDb);
     }
 
-    public async newVersion(link: Link, user: User): Promise<Link> {
+    public async newVersion(link: Link, short: string, user: User): Promise<Link> {
         let linkToDb = new Link();
 
         if (!validUrl.isUri(link.original)) {
@@ -60,7 +66,9 @@ export class LinkService {
                 ]);
         }
 
-        const existingVersion = await this.isAllowedToGenerateNewVersion(link, user)
+        const existingVersion = await this.isAllowedToGenerateNewVersion(short, user)
+        existingVersion.isActive = -1;
+        this.linkRepository.save(existingVersion).then();
 
         linkToDb.short = existingVersion.short;
         linkToDb.creator = existingVersion.creator;
@@ -114,18 +122,18 @@ export class LinkService {
             }
         });
 
-        return link === undefined;
+        return link !== undefined;
     }
 
-    private async isAllowedToGenerateNewVersion(link: Link, user: User) {
-        const _link = await this.getLinkByShort(link.short);
+    private async isAllowedToGenerateNewVersion(short: string, user: User) {
+        const _link = await this.getLinkByShort(short);
 
         if (_link.creator.username !== user.username) {
             throw new InsufficientPermissionsException(null,
                 "Missing permissions to generate new version for specified Link", [
                     {
                         "attribute": "short",
-                        "value": link.short
+                        "value": short
                     }
                 ]);
         }

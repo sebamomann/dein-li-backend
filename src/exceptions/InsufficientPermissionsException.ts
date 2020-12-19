@@ -21,4 +21,12 @@ export class InsufficientPermissionsException implements Error {
 
         this.data = data;
     }
+
+    parse() {
+        return {
+            code: this.code,
+            message: this.message,
+            data: this.data
+        };
+    }
 }

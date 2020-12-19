@@ -3,7 +3,8 @@ import {UserService} from '../user/user.service';
 import {JwtService} from '@nestjs/jwt';
 import {User} from '../user/user.entity';
 
-import bcrypt from "bcryptjs";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bcrypt = require('bcryptjs');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const userMapper = require('../user/user.mapper');
@@ -30,7 +31,8 @@ export class AuthService {
             if (await bcrypt.compare(pass, user.password)) {
                 const session = await this.userService.createSession(user);
 
-                user.refreshToken = session.refreshToken;
+                user.session = {};
+                user.session.refreshToken = session.refreshToken;
 
                 return userMapper.basic(this.userService, user);
             } else {
@@ -61,7 +63,7 @@ export class AuthService {
     public addJwtToObject(user: User) {
         /* change here for more data | and in jwt strategy */
         const payload = {sub: user.id, mail: user.mail, username: user.username};
-        user.token = this.jwtService.sign(payload);
+        user.session.token = this.jwtService.sign(payload);
 
         return user;
     }
@@ -83,14 +85,10 @@ export class AuthService {
 
         const _user = userMapper.basic(this.userService, user);
 
-        const token = this.addJwtToObject(_user);
+        this.addJwtToObject(_user);
 
-        delete user.token;
+        _user.session.refreshToken = data.refreshToken;
 
-        return {
-            ..._user,
-            token: token.token,
-            refreshToken: data.refreshToken,
-        };
+        return _user;
     }
 }

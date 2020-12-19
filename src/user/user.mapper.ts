@@ -7,12 +7,14 @@ module.exports = {
                               id,
                               username,
                               mail,
+                              session,
                               iat,
                           }) =>
             ({
                 id,
                 username,
                 mail,
+                session,
                 iat,
             }))
         (_user);
