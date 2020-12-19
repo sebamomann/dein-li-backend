@@ -1,4 +1,4 @@
-import {Body, Controller, HttpStatus, Param, Post, Res, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, HttpStatus, Param, Post, Res, UseGuards, UseInterceptors} from '@nestjs/common';
 
 import {Usr} from '../user/user.decorator';
 import {User} from "../user/user.entity";
@@ -10,12 +10,28 @@ import {AuthGuard} from '@nestjs/passport';
 
 import {Response} from 'express';
 import {BusinessToHttpExceptionInterceptor} from "../interceptor/BusinessToHttpException.interceptor";
+import {JwtOptStrategy} from "../auth/jwt-opt.strategy";
 
 @Controller('link')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)
 export class LinkController {
 
     constructor(private linkService: LinkService) {
+    }
+
+    @Get(':short')
+    @UseGuards(JwtOptStrategy)
+    get(@Usr() user: User,
+        @Param('short') short: string,
+        @Res() res: Response,) {
+        return this.linkService
+            .get(short, user)
+            .then(tLink => {
+                res.status(HttpStatus.OK).json(tLink);
+            })
+            .catch((err) => {
+                throw err;
+            });
     }
 
     @Post()

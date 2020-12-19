@@ -96,6 +96,12 @@ export class LinkService {
         return link;
     }
 
+    public async get(short: string, user: User): Promise<Link> {
+        const link = await this.getLinkByShort(short);
+
+        return linkMapper.basic(link);
+    }
+
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {
         if (short) {
             if (await this.linkInUse(short)) {
