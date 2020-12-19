@@ -8,6 +8,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {AlreadyUsedException} from "../exceptions/AlreadyUsedException";
 import {EntityNotFoundException} from "../exceptions/EntityNotFoundException";
 import {InsufficientPermissionsException} from "../exceptions/InsufficientPermissionsException";
+import {CallService} from "./call/call.service";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const validUrl = require("valid-url");
@@ -23,6 +24,7 @@ export class LinkService {
     constructor(
         @InjectRepository(Link)
         private readonly linkRepository: Repository<Link>,
+        private callService: CallService
     ) {
     }
 
@@ -145,5 +147,13 @@ export class LinkService {
         }
 
         return _link;
+    }
+
+    public async getHistoryStats(short: string, user: User) {
+        const link = await this.getLinkByShort(short);
+
+        const stats = this.callService.getStats(link);
+
+        return stats;
     }
 }

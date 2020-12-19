@@ -4,9 +4,10 @@ import {Link} from "./link.entity";
 import {LinkService} from "./link.service";
 import {LinkController} from "./link.controller";
 import {UserModule} from "../user/user.module";
+import {CallModule} from "./call/call.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Link]), UserModule],
+    imports: [TypeOrmModule.forFeature([Link]), UserModule, CallModule],
     providers: [LinkService],
     exports: [LinkService],
     controllers: [LinkController],
