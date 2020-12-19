@@ -71,6 +71,23 @@ export class LinkService {
         return linkToDb;
     }
 
+    public async getLinkByShort(short: string) {
+        const link = await this.linkRepository.findOne({
+            where: {
+                short,
+            },
+            order: {
+                iat: "DESC"
+            },
+        });
+
+        if (link === undefined) {
+            throw new EntityNotFoundException(null, null, 'link');
+        }
+
+        return link;
+    }
+
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {
         if (short) {
             if (await this.linkInUse(short)) {
@@ -114,19 +131,5 @@ export class LinkService {
         }
 
         return _link;
-    }
-
-    private async getLinkByShort(short: string) {
-        const link = await this.linkRepository.findOne({
-            where: {
-                short,
-            }
-        });
-
-        if (link === undefined) {
-            throw new EntityNotFoundException(null, null, 'link');
-        }
-
-        return link;
     }
 }

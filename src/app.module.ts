@@ -9,6 +9,8 @@ import {AuthModule} from "./auth/auth.module";
 import {Link} from "./link/link.entity";
 import {User} from "./user/user.entity";
 import {Session} from "./user/session.entity";
+import {Call} from "./link/call/call.entity";
+import {CallModule} from "./link/call/call.module";
 
 @Module({
     imports: [
@@ -20,12 +22,13 @@ import {Session} from "./user/session.entity";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
             timezone: '+02:00',
-            entities: [User, Session, Link],
+            entities: [User, Session, Link, Call],
             synchronize: true
         }),
         UserModule,
         LinkModule,
         AuthModule,
+        CallModule,
     ],
     controllers: [AppController],
     providers: [AppService],
