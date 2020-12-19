@@ -41,4 +41,6 @@ export class User {
 
     @CreateDateColumn()
     iat: Date;
+
+    token: string;
 }

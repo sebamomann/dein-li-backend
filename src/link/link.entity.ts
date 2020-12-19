@@ -10,7 +10,7 @@ export class Link {
     short: string;
 
     @Column()
-    original: webkitURL;
+    original: string;
 
     @Column({default: true})
     isActive: boolean;

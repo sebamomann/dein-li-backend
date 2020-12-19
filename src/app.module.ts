@@ -3,9 +3,12 @@ import {AppController} from './app.controller';
 import {AppService} from './app.service';
 
 import {TypeOrmModule} from '@nestjs/typeorm';
-import { LinkController } from './link/link.controller';
-import { UserController } from './user/user.controller';
-import { LinkService } from './link/link.service';
+import {UserModule} from "./user/user.module";
+import {LinkModule} from "./link/link.module";
+import {AuthModule} from "./auth/auth.module";
+import {Link} from "./link/link.entity";
+import {User} from "./user/user.entity";
+import {Session} from "./user/session.entity";
 
 @Module({
     imports: [
@@ -17,12 +20,15 @@ import { LinkService } from './link/link.service';
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
             timezone: '+02:00',
-            entities: [],
+            entities: [User, Session, Link],
             synchronize: true
-        })
+        }),
+        UserModule,
+        LinkModule,
+        AuthModule,
     ],
-    controllers: [AppController, LinkController, UserController],
-    providers: [AppService, LinkService],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {
 }
