@@ -1,32 +1,21 @@
-export class InsufficientPermissionsException implements Error {
-    message: string;
-    name: string;
-    data: string;
-    code: string;
+import {Exception} from "./Exception";
 
+export class InsufficientPermissionsException extends Exception {
     constructor(code: string = null, message: string = null, data: any = null) {
-        if (code === null
-            || code === '') {
+        super();
+
+        if (!code) {
             this.code = 'FORBIDDEN';
         } else {
             this.code = code;
         }
 
-        if (message === null
-            || message === '') {
+        if (!message) {
             this.message = 'Missing permissions to execute request';
         } else {
             this.message = message;
         }
 
         this.data = data;
-    }
-
-    parse() {
-        return {
-            code: this.code,
-            message: this.message,
-            data: this.data
-        };
     }
 }

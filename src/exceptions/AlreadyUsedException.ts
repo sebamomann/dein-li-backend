@@ -1,26 +1,17 @@
-export class AlreadyUsedException implements Error {
-    message: string;
-    name: string;
-    data: string[];
-    code: string;
+import {Exception} from "./Exception";
 
+export class AlreadyUsedException extends Exception {
     constructor(code: string = null, message: string = null, data: any = null) {
-        if (code === null
-            || code === '') {
+        super();
+
+        if (!code) {
             this.code = 'USED';
         } else {
             this.code = code;
         }
 
+
         this.message = message;
         this.data = data;
-    }
-
-    parse() {
-        return {
-            code: this.code,
-            message: this.message,
-            data: this.data
-        };
     }
 }

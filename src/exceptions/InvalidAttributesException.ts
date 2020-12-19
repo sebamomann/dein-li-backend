@@ -1,12 +1,10 @@
-export class InvalidAttributesException implements Error {
-    message: string;
-    name: string;
-    data: string[];
-    code: string;
+import {Exception} from "./Exception";
 
+export class InvalidAttributesException extends Exception {
     constructor(code: string = null, message: string = null, data: any = null) {
-        if (code === null
-            || code === '') {
+        super();
+
+        if (!code) {
             this.code = 'INVALID_ATTRIBUTE';
         } else {
             this.code = code;
@@ -14,13 +12,5 @@ export class InvalidAttributesException implements Error {
 
         this.message = message;
         this.data = data;
-    }
-
-    parse() {
-        return {
-            code: this.code,
-            message: this.message,
-            data: this.data
-        };
     }
 }
