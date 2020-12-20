@@ -124,6 +124,14 @@ export class LinkService {
 
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {
         if (short) {
+            if (!short.match(new RegExp("^[a-zA-Z0-9\-\_]*$"))) {
+                throw new InvalidAttributesException(null,
+                    "The specified short Link has a invalid Format. The required Format is '^[a-zA-Z0-9\-\_]*$'", [{
+                        "attribute": "short",
+                        "value": short
+                    }])
+            }
+
             if (await this.linkInUse(short)) {
                 throw new AlreadyUsedException(null,
                     "The specified short Link is already taken. Please specify a new one", [{
