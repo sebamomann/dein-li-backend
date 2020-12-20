@@ -49,6 +49,21 @@ export class LinkController {
             });
     }
 
+    @Get(':short/version')
+    @UseGuards(AuthGuard('jwt'))
+    getVersions(@Usr() user: User,
+                    @Param('short') short: string,
+                    @Res() res: Response,) {
+        return this.linkService
+            .getVersions(short, user)
+            .then(tLink => {
+                res.status(HttpStatus.OK).json(tLink);
+            })
+            .catch((err) => {
+                throw err;
+            });
+    }
+
     @Post()
     @UseGuards(AuthGuard('jwt'))
     create(@Usr() user: User,

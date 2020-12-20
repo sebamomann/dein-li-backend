@@ -104,6 +104,24 @@ export class LinkService {
         return linkMapper.basic(link);
     }
 
+    public async getHistoryStats(short: string, user: User) {
+        const link = await this.getLinkByShort(short);
+
+        const stats = this.callService.getStats(link);
+
+        return stats;
+    }
+
+    public async getVersions(short: string, user: User) {
+        let links = await this.linkRepository.find({where: {short, creator: user}, order: {iat: "DESC"}})
+
+        links = links.map((mLink) => {
+            return linkMapper.basic(mLink)
+        });
+
+        return links;
+    }
+
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {
         if (short) {
             if (await this.linkInUse(short)) {
@@ -147,13 +165,5 @@ export class LinkService {
         }
 
         return _link;
-    }
-
-    public async getHistoryStats(short: string, user: User) {
-        const link = await this.getLinkByShort(short);
-
-        const stats = this.callService.getStats(link);
-
-        return stats;
     }
 }
