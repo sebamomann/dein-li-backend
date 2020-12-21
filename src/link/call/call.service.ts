@@ -34,15 +34,14 @@ export class CallService {
     }
 
     public async getStats(link: Link): Promise<IStats> {
-        const calls = await this.callRepository.count({where: {link}});
+        const totalCalls = await this.callRepository.count({where: {link}});
+
         let distinctCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(DISTINCT call.agent) AS count")
             .where("call.linkId = :linkId", {linkId: link.id})
             .getRawOne();
 
         distinctCalls = distinctCalls.count;
-
-        const AfterDate = (date: Date) => Between(date, subDays(date, 1));
 
         const d = new Date();
         d.setDate(d.getDate() - 1);
@@ -67,7 +66,7 @@ export class CallService {
         }
 
         return {
-            total: calls,
+            total: totalCalls,
             distinctCalls,
             calls: pastDayByHours,
             format: "hour_one_day"
