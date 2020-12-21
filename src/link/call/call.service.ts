@@ -1,12 +1,11 @@
 import {Injectable} from '@nestjs/common';
-import {Between, Repository} from "typeorm";
+import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Call} from "./call.entity";
 import {CallSuccessful} from "./callSuccessful.entity";
 import {CallLocked} from "./callLocked.entity";
 import {CallUndefined} from "./callundefined.entity";
 import {Link} from "../link.entity";
-import {subDays} from 'date-fns';
 import {IStats} from "../IStats.model";
 
 @Injectable()
@@ -34,11 +33,18 @@ export class CallService {
     }
 
     public async getStats(link: Link): Promise<IStats> {
-        const totalCalls = await this.callRepository.count({where: {link}});
+        let totalCalls = await this.callRepository.createQueryBuilder('call')
+            .select("COUNT(*) AS count")
+            .innerJoin("call.link", "link")
+            .where("link.short = :short", {short: link.short})
+            .getRawOne();
+
+        totalCalls = totalCalls.count;
 
         let distinctCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(DISTINCT call.agent) AS count")
-            .where("call.linkId = :linkId", {linkId: link.id})
+            .innerJoin("call.link", "link")
+            .where("link.short = :short", {short: link.short})
             .getRawOne();
 
         distinctCalls = distinctCalls.count;
@@ -48,7 +54,8 @@ export class CallService {
 
         const pastDay = await this.callRepository.createQueryBuilder('call')
             .select("HOUR(call.iat) as hour, COUNT(*) as count")
-            .where("call.linkId = :linkId", {linkId: link.id})
+            .innerJoin("call.link", "link")
+            .where("link.short = :short", {short: link.short})
             .andWhere("call.iat > :iat", {iat: d})
             .groupBy("HOUR(call.iat)")
             .execute();
