@@ -19,7 +19,22 @@ export class LinkController {
     constructor(private linkService: LinkService) {
     }
 
-    @Get(':short')
+    @Get('/all')
+    @UseGuards(AuthGuard('jwt'))
+    getAll(@Usr() user: User,
+           @Res() res: Response,) {
+        return this.linkService
+            .getAll(user)
+            .then(tLink => {
+                res.status(HttpStatus.OK).json(tLink);
+            })
+            .catch((err) => {
+                throw err;
+            });
+    }
+
+
+    @Get(':short?')
     @UseGuards(JwtOptStrategy)
     get(@Usr() user: User,
         @Param('short') short: string,
@@ -37,8 +52,8 @@ export class LinkController {
     @Get(':short/history')
     @UseGuards(AuthGuard('jwt'))
     getHistoryStats(@Usr() user: User,
-        @Param('short') short: string,
-        @Res() res: Response,) {
+                    @Param('short') short: string,
+                    @Res() res: Response,) {
         return this.linkService
             .getHistoryStats(short, user)
             .then(tLink => {
@@ -52,8 +67,8 @@ export class LinkController {
     @Get(':short/version')
     @UseGuards(AuthGuard('jwt'))
     getVersions(@Usr() user: User,
-                    @Param('short') short: string,
-                    @Res() res: Response,) {
+                @Param('short') short: string,
+                @Res() res: Response,) {
         return this.linkService
             .getVersions(short, user)
             .then(tLink => {

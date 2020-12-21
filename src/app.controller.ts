@@ -78,11 +78,10 @@ export class AppController {
             });
     }
 
-    @Get(':short')
+    @Get(':short?')
     async redirect(@Request() req,
                    @Param('short') short: string,
                    @Res() res) {
-
         try {
             const link = await this.linkService.getLinkByShort(short);
 

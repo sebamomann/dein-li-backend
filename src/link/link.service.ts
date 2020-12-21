@@ -122,6 +122,10 @@ export class LinkService {
         return links;
     }
 
+    public async getAll(user: User) {
+        return await this.linkRepository.find({where: {creator: user}})
+    }
+
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {
         if (short) {
             if (!short.match(new RegExp("^[a-zA-Z0-9\-\_]*$"))) {
