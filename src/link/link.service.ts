@@ -105,9 +105,13 @@ export class LinkService {
     }
 
     public async getHistoryStats(short: string, user: User) {
-        const link = await this.getLinkByShort(short);
+        let stats;
 
-        const stats = this.callService.getStats(link);
+        if (short !== "all") {
+            stats = await this.getLinkStatsNormal(short);
+        } else {
+            stats = await this.getLinkStatsTotal();
+        }
 
         return stats;
     }
@@ -123,7 +127,29 @@ export class LinkService {
     }
 
     public async getAll(user: User) {
-        return await this.linkRepository.find({where: {creator: user}})
+        let val = await this.linkRepository
+            .createQueryBuilder("link")
+            .select('*')
+            .where("creatorId = :userId", {
+                userId: user.id
+            })
+            .orderBy({iat: "DESC"})
+            .groupBy("short")
+            .getRawMany();
+
+        val = val.map((mVal) => linkMapper.basic(mVal));
+
+        return val;
+    }
+
+    private async getLinkStatsNormal(short: string) {
+        const link = await this.getLinkByShort(short);
+
+        return await this.callService.getStats(link);
+    }
+
+    private async getLinkStatsTotal() {
+        return await this.callService.getStatsTotal();
     }
 
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {

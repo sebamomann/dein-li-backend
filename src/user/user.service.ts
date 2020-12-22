@@ -21,7 +21,7 @@ export class UserService {
     }
 
     public async findById(id: string): Promise<User> {
-        const user = await this.userRepository.findOne({where: {id: id}, relations: ['pinned']});
+        const user = await this.userRepository.findOne({where: {id: id}});
 
         if (user === undefined) {
             throw new EntityNotFoundException(null, null, 'user');
@@ -94,7 +94,7 @@ export class UserService {
     }
 
     public async sessionExists(refreshToken: string, id: string) {
-        const session = await this.sessionRepository.findOne({where: {refreshToken: refreshToken, user: id}});
+        const session = await this.sessionRepository.findOne({where: {refreshToken: refreshToken, user: {id}}});
 
         if (session === undefined) {
             throw new EntityNotFoundException();

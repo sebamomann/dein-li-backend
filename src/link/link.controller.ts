@@ -49,6 +49,21 @@ export class LinkController {
             });
     }
 
+    @Get('all/history')
+    @UseGuards()
+    getHistoryStatsAll(@Usr() user: User,
+                       @Param('short') short: string,
+                       @Res() res: Response,) {
+        return this.linkService
+            .getHistoryStats("all", user)
+            .then(tLink => {
+                res.status(HttpStatus.OK).json(tLink);
+            })
+            .catch((err) => {
+                throw err;
+            });
+    }
+
     @Get(':short/history')
     @UseGuards(AuthGuard('jwt'))
     getHistoryStats(@Usr() user: User,

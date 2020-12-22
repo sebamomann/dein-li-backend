@@ -11,7 +11,7 @@ import {AuthService} from './auth.service';
         forwardRef(() => UserModule),
         JwtModule.register({
             secret: jwtConstants.secret,
-            signOptions: {expiresIn: '15m'},
+            signOptions: {expiresIn: '10s'},
         }),
     ],
     providers: [AuthService, LocalStrategy, JwtStrategy],

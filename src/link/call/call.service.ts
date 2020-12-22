@@ -79,4 +79,46 @@ export class CallService {
             format: "hour_one_day"
         }
     }
+
+    public async getStatsTotal(): Promise<IStats> {
+        let totalCalls = await this.callRepository.createQueryBuilder('call')
+            .select("COUNT(*) AS count")
+            .getRawOne();
+
+        totalCalls = totalCalls.count;
+
+        let distinctCalls = await this.callRepository.createQueryBuilder('call')
+            .select("COUNT(DISTINCT call.agent) AS count")
+            .getRawOne();
+
+        distinctCalls = distinctCalls.count;
+
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+
+        const pastDay = await this.callRepository.createQueryBuilder('call')
+            .select("HOUR(call.iat) as hour, COUNT(*) as count")
+            .where("call.iat > :iat", {iat: d})
+            .groupBy("HOUR(call.iat)")
+            .execute();
+
+        const pastDayByHours = [];
+
+        for (let i = 0; i < 24; i++) {
+            const call = pastDay.find(fElem => fElem.hour === i);
+            let calls = 0;
+
+            if (call) {
+                calls = call.count;
+            }
+            pastDayByHours.push({hour: i, calls: calls > 0 ? calls : 0})
+        }
+
+        return {
+            total: totalCalls,
+            distinctCalls,
+            calls: pastDayByHours,
+            format: "hour_one_day"
+        }
+    }
 }

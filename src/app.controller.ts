@@ -56,10 +56,7 @@ export class AppController {
         return this.authService
             .generateAccessToken(data)
             .then((result) => {
-                res.status(HttpStatus.CREATED).json({
-                    data: result,
-                    date: new Date(Date.now())
-                });
+                res.status(HttpStatus.CREATED).json(result);
             })
             .catch((err) => {
                 if (err instanceof EntityNotFoundException || err instanceof UnauthorizedException) {

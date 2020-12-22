@@ -85,6 +85,8 @@ export class AuthService {
 
         const _user = userMapper.basic(this.userService, user);
 
+        _user.session = {};
+
         this.addJwtToObject(_user);
 
         _user.session.refreshToken = data.refreshToken;
