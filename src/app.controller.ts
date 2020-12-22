@@ -79,23 +79,26 @@ export class AppController {
     async redirect(@Request() req,
                    @Param('short') short: string,
                    @Res() res) {
-        try {
-            const link = await this.linkService.getLinkByShort(short);
+        if (!short) {
+            res.set('location', process.env.DOMAIN + "?success=true&type=default");
+        } else {
+            try {
+                const link = await this.linkService.getLinkByShort(short);
 
-            if (link.isActive === 1) {
-                this.callService.manageLinkCall(link, 1, req.headers['user-agent']);
-                res.set('location', link.original);
-            } else if (link.isActive === -2) {
-                this.callService.manageLinkCall(link, -2, req.headers['user-agent']);
-                res.set('location', process.env.DOMAIN + "/redirect?success=false&error=locked");
-            } else {
-                this.callService.manageLinkCall(link, null, req.headers['user-agent']);
-                res.set('location', process.env.DOMAIN + "/redirect?success=false&error=unknown");
+                if (link.isActive === 1) {
+                    this.callService.manageLinkCall(link, 1, req.headers['user-agent']);
+                    res.set('location', link.original);
+                } else if (link.isActive === -2) {
+                    this.callService.manageLinkCall(link, -2, req.headers['user-agent']);
+                    res.set('location', process.env.DOMAIN + "/redirect?success=false&error=locked");
+                } else {
+                    this.callService.manageLinkCall(link, null, req.headers['user-agent']);
+                    res.set('location', process.env.DOMAIN + "/redirect?success=false&error=unknown");
+                }
+            } catch (e) {
+                res.set('location', process.env.DOMAIN + "/redirect?success=false&error=not_found");
             }
-        } catch (e) {
-            res.set('location', process.env.DOMAIN + "/redirect?success=false&error=not_found");
         }
-
 
         return res.status(HttpStatus.TEMPORARY_REDIRECT).json();
     }
