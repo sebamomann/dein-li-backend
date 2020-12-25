@@ -138,8 +138,12 @@ export class LinkService {
             switch (orderBy) {
                 case "calls":
                     val = await this.getAllOrderByCalls(user, order);
+                    break;
+                case "iat":
+                    val = await this.getAllOrderByIat(user, order);
+                    break;
                 default:
-
+                    val = await this.getAllOrderByIat(user, order);
             }
         }
 
@@ -228,7 +232,7 @@ export class LinkService {
             .createQueryBuilder("link")
             .select("link.short", "short")
             .addSelect("COUNT(call.id)", "nrOfCalls")
-            .innerJoin("call", "call", "call.linkId = link.id")
+            .leftJoin("call", "call", "call.linkId = link.id")
             .where("link.creatorId = '" + user.id + "'") // okay bcs it comes from jwt
             .groupBy("short");
 
