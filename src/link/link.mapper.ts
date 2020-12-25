@@ -6,12 +6,14 @@ module.exports = {
                               id,
                               short,
                               original,
+                              nrOfCalls,
                               iat,
                           }) =>
             ({
                 id,
                 short,
                 original,
+                nrOfCalls,
                 iat,
             }))
         (_link);

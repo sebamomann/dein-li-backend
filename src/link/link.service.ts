@@ -126,16 +126,22 @@ export class LinkService {
         return links;
     }
 
-    public async getAll(user: User) {
-        let val = await this.linkRepository
-            .createQueryBuilder("link")
-            .select('*')
-            .where("creatorId = :userId", {
-                userId: user.id
-            })
-            .orderBy({iat: "DESC"})
-            .groupBy("short")
-            .getRawMany();
+    public async getAll(user: User, orderBy: string, order: "ASC" | "DESC") {
+        let val: Link[];
+        if (!orderBy) {
+            val = await this.getAllOrderByIat(user, "DESC");
+        } else {
+            if (order !== "ASC" && order !== "DESC") {
+                order = "DESC";
+            }
+
+            switch (orderBy) {
+                case "calls":
+                    val = await this.getAllOrderByCalls(user, order);
+                default:
+
+            }
+        }
 
         val = val.map((mVal) => linkMapper.basic(mVal));
 
@@ -203,5 +209,37 @@ export class LinkService {
         }
 
         return _link;
+    }
+
+    private async getAllOrderByIat(user: User, order: "ASC" | "DESC") {
+        return await this.linkRepository
+            .createQueryBuilder("link")
+            .select('*')
+            .where("creatorId = :userId", {
+                userId: user.id
+            })
+            .orderBy({iat: order})
+            .groupBy("short")
+            .getRawMany();
+    }
+
+    private async getAllOrderByCalls(user: User, order: "ASC" | "DESC"): Promise<Link[]> {
+        const subQuery = this.linkRepository
+            .createQueryBuilder("link")
+            .select("link.short", "short")
+            .addSelect("COUNT(call.id)", "nrOfCalls")
+            .innerJoin("call", "call", "call.linkId = link.id")
+            .where("link.creatorId = '" + user.id + "'") // okay bcs it comes from jwt
+            .groupBy("short");
+
+        const res = await this.linkRepository
+            .createQueryBuilder("link")
+            .select("link.*, sub.nrOfCalls")
+            .innerJoin("(" + subQuery.getQuery() + ")", "sub", "link.short = sub.short")
+            .where("link.isActive = :isActive", {isActive: 1})
+            .orderBy("sub.nrOfCalls", order)
+            .getRawMany();
+
+        return res;
     }
 }

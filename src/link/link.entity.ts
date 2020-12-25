@@ -34,4 +34,6 @@ export class Link {
 
     @CreateDateColumn()
     iat: Date;
+
+    nrOfCalls: number;
 }
