@@ -142,6 +142,9 @@ export class LinkService {
                 case "iat":
                     val = await this.getAllOrderByIat(user, order);
                     break;
+                case "calls_version":
+                    val = await this.getAllOrderByCallsVersion(user, order);
+                    break;
                 default:
                     val = await this.getAllOrderByIat(user, order);
             }
@@ -234,6 +237,27 @@ export class LinkService {
             .addSelect("COUNT(call.id)", "nrOfCalls")
             .leftJoin("call", "call", "call.linkId = link.id")
             .where("link.creatorId = '" + user.id + "'") // okay bcs it comes from jwt
+            .groupBy("short");
+
+        const res = await this.linkRepository
+            .createQueryBuilder("link")
+            .select("link.*, sub.nrOfCalls")
+            .innerJoin("(" + subQuery.getQuery() + ")", "sub", "link.short = sub.short")
+            .where("link.isActive = :isActive", {isActive: 1})
+            .orderBy("sub.nrOfCalls", order)
+            .getRawMany();
+
+        return res;
+    }
+
+    private async getAllOrderByCallsVersion(user: User, order: "ASC" | "DESC") {
+        const subQuery = this.linkRepository
+            .createQueryBuilder("link")
+            .select("link.short", "short")
+            .addSelect("COUNT(call.id)", "nrOfCalls")
+            .leftJoin("call", "call", "call.linkId = link.id")
+            .where("link.creatorId = '" + user.id + "'") // okay bcs it comes from jwt
+            .andWhere("link.isActive = " + 1)
             .groupBy("short");
 
         const res = await this.linkRepository
