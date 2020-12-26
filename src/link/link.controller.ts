@@ -10,7 +10,6 @@ import {AuthGuard} from '@nestjs/passport';
 
 import {Response} from 'express';
 import {BusinessToHttpExceptionInterceptor} from "../interceptor/BusinessToHttpException.interceptor";
-import {JwtOptStrategy} from "../auth/jwt-opt.strategy";
 
 @Controller('link')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)
@@ -37,12 +36,10 @@ export class LinkController {
 
 
     @Get(':short?')
-    @UseGuards(JwtOptStrategy)
-    get(@Usr() user: User,
-        @Param('short') short: string,
-        @Res() res: Response,) {
+    getLinkByShort(@Param('short') short: string,
+                   @Res() res: Response,) {
         return this.linkService
-            .get(short, user)
+            .get(short)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })
@@ -52,12 +49,10 @@ export class LinkController {
     }
 
     @Get('all/history')
-    @UseGuards()
-    getHistoryStatsAll(@Usr() user: User,
-                       @Param('short') short: string,
+    getHistoryStatsAll(@Param('short') short: string,
                        @Res() res: Response,) {
         return this.linkService
-            .getHistoryStats("all", user)
+            .getHistoryStats("all", undefined)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })

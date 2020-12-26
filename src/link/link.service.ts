@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {Link} from "./link.entity";
 import {User} from "../user/user.entity";
 import {InvalidAttributesException} from "../exceptions/InvalidAttributesException";
@@ -85,10 +85,8 @@ export class LinkService {
         const link = await this.linkRepository.findOne({
             where: {
                 short,
-            },
-            order: {
-                iat: "DESC"
-            },
+                isActive: 1
+            }
         });
 
         if (link === undefined) {
@@ -98,7 +96,7 @@ export class LinkService {
         return link;
     }
 
-    public async get(short: string, user: User): Promise<Link> {
+    public async get(short: string): Promise<Link> {
         const link = await this.getLinkByShort(short);
 
         return linkMapper.basic(link);
@@ -108,7 +106,7 @@ export class LinkService {
         let stats;
 
         if (short !== "all") {
-            stats = await this.getLinkStatsNormal(short);
+            stats = await this.getLinkStatsByShort(short, user);
         } else {
             stats = await this.getLinkStatsTotal();
         }
@@ -155,10 +153,14 @@ export class LinkService {
         return val;
     }
 
-    private async getLinkStatsNormal(short: string) {
+    private async getLinkStatsByShort(short: string, user: User) {
         const link = await this.getLinkByShort(short);
 
-        return await this.callService.getStats(link);
+        if (link.creator.id !== user.id) {
+            throw new UnauthorizedException();
+        } else {
+            return await this.callService.getStats(link);
+        }
     }
 
     private async getLinkStatsTotal() {

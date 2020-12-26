@@ -1,6 +1,6 @@
 export interface IStats {
     total: number,
     distinctCalls: number,
-    calls: any;
-    format: string
+    calls?: any;
+    format?: string
 }

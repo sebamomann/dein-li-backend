@@ -7,6 +7,7 @@ import {
     InternalServerErrorException,
     NestInterceptor,
     NotFoundException,
+    UnauthorizedException,
     UnprocessableEntityException
 } from '@nestjs/common';
 import {Observable} from 'rxjs';
@@ -28,6 +29,8 @@ export class BusinessToHttpExceptionInterceptor implements NestInterceptor {
                             throw new NotFoundException(exception.parse());
                         } else if (exception instanceof AlreadyUsedException) {
                             throw new BadRequestException(exception.parse());
+                        } else if (exception instanceof UnauthorizedException) {
+                            throw new UnauthorizedException();
                         } else if (exception instanceof InsufficientPermissionsException) {
                             throw new ForbiddenException(exception.parse());
                         } else if (exception instanceof InvalidAttributesException) {
