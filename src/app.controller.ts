@@ -81,6 +81,9 @@ export class AppController {
                    @Res() res) {
         if (!short) {
             res.set('location', process.env.DOMAIN + "?success=true&type=default");
+        } else if (short.endsWith("~")) {
+            const url = process.env.DOMAIN + "/link?l=" + short.substr(0, short.length - 1) + "&type=preview";
+            res.set('location', url);
         } else {
             try {
                 const link = await this.linkService.getLinkByShort(short);
