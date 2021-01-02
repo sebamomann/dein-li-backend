@@ -213,7 +213,7 @@ export class CallService {
             .execute();
 
         past = past.map((mPastDay) => {
-            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), 0, 0, 0);
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), 12, 0, 0);
             mPastDay.iat = iat;
 
             return mPastDay;
@@ -233,7 +233,7 @@ export class CallService {
             .execute();
 
         past = past.map((mPastDay) => {
-            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), 0, 0, 0, 0);
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), 1, 12, 0, 0);
             mPastDay.iat = iat;
 
             return mPastDay;
@@ -287,7 +287,8 @@ export class CallService {
             .execute();
 
         past = past.map((mPastDay) => {
-            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), 0, 0, 0);
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), 12, 0, 0);
+            console.log(iat);
             mPastDay.iat = iat;
 
             return mPastDay;
@@ -305,7 +306,7 @@ export class CallService {
             .execute();
 
         past = past.map((mPastDay) => {
-            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), 0, 0, 0, 0);
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), 1, 12, 0, 0);
             mPastDay.iat = iat;
 
             return mPastDay;
