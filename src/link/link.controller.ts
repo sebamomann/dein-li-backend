@@ -48,12 +48,15 @@ export class LinkController {
             });
     }
 
+    // NEEDED FOR USER AUTHENTICATION AT NEXT ENDPOINT
     @Get('all/history')
     getHistoryStatsAll(@Param('short') short: string,
+                       @Query('start') start: string,
+                       @Query('end') end: string,
                        @Query('interval') interval: "minutes" | "hours" | "days",
                        @Res() res: Response,) {
         return this.linkService
-            .getHistoryStats("all", undefined, interval, "", "")
+            .getHistoryStats("all", undefined, interval, start, end)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })
