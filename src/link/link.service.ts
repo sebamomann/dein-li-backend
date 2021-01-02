@@ -102,13 +102,17 @@ export class LinkService {
         return linkMapper.basic(link);
     }
 
-    public async getHistoryStats(short: string, user: User) {
+    public async getHistoryStats(short: string, user: User, interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
         let stats;
 
+        if (!interval) {
+            interval = "hours"
+        }
+
         if (short !== "all") {
-            stats = await this.getLinkStatsByShort(short, user);
+            stats = await this.getLinkStatsByShort(short, user, interval, start, end);
         } else {
-            stats = await this.getLinkStatsTotal();
+            stats = await this.getLinkStatsTotal(interval, start, end);
         }
 
         return stats;
@@ -153,18 +157,18 @@ export class LinkService {
         return val;
     }
 
-    private async getLinkStatsByShort(short: string, user: User) {
+    private async getLinkStatsByShort(short: string, user: User, interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
         const link = await this.getLinkByShort(short);
 
         if (link.creator.id !== user.id) {
             throw new UnauthorizedException();
         } else {
-            return await this.callService.getStats(link);
+            return await this.callService.getStats(link, interval, start, end);
         }
     }
 
-    private async getLinkStatsTotal() {
-        return await this.callService.getStatsTotal();
+    private async getLinkStatsTotal(interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
+        return await this.callService.getStatsTotal(interval, start, end);
     }
 
     private async linkGenerationAndDuplicateCheck(short: string): Promise<string> {

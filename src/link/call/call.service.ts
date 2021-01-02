@@ -32,10 +32,10 @@ export class CallService {
         this.callRepository.save(call).then();
     }
 
-    public async getStats(link: Link): Promise<IStats> {
+    public async getStats(link: Link, interval: "minutes" | "hours" | "days" | "months", start: string, end: string): Promise<IStats> {
         const totalCalls = await this.getTotalCallsByShort(link);
         const distinctCalls = await this.getDistinctCallsByShort(link);
-        const pastDayByHours = await this.getCallsOfLastDayByHourByShort(link);
+        const pastDayByHours = await this.getStatsByShort(link, interval, start, end);
 
         return {
             total: totalCalls,
@@ -55,7 +55,7 @@ export class CallService {
         }
     }
 
-    public async getStatsTotal(): Promise<IStats> {
+    public async getStatsTotal(interval: "minutes" | "hours" | "days" | "months", start: string, end: string): Promise<IStats> {
         let totalCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(*) AS count")
             .getRawOne();
@@ -68,62 +68,252 @@ export class CallService {
 
         distinctCalls = distinctCalls.count;
 
-        const d = new Date();
-        d.setDate(d.getDate() - 1);
+        const past = await this.getStatsAll(interval, start, end);
 
-        const pastDay = await this.callRepository.createQueryBuilder('call')
-            .select("HOUR(call.iat) as hour, COUNT(*) as count")
-            .where("call.iat > :iat", {iat: d})
-            .groupBy("HOUR(call.iat)")
-            .execute();
-
-        const pastDayByHours = [];
-
-        for (let i = 0; i < 24; i++) {
-            const call = pastDay.find(fElem => fElem.hour === i);
-            let calls = 0;
-
-            if (call) {
-                calls = call.count;
-            }
-            pastDayByHours.push({hour: i, calls: calls > 0 ? calls : 0})
-        }
 
         return {
             total: totalCalls,
             distinctCalls,
-            calls: pastDayByHours,
+            calls: past,
             format: "hour_one_day"
         }
     }
 
-    private async getCallsOfLastDayByHourByShort(link: Link) {
-        let d = new Date();
-        d.setDate(d.getDate() - 1);
-        d = new Date(d.setTime(d.getTime() + (1 * 60 * 60 * 1000)));
+    private async getStatsAll(interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
+        let dStart;
+
+        if (!start) {
+            dStart = new Date();
+            dStart.setDate(dStart.getDate() - 1);
+            dStart = new Date(dStart.setTime(dStart.getTime() + (1 * 60 * 60 * 1000)));
+        } else {
+            dStart = new Date(start);
+        }
+
+        let dEnd;
+
+        if (!end) {
+            dEnd = new Date();
+        } else {
+            dEnd = new Date(end);
+        }
+        let past;
 
 
-        const pastDay = await this.callRepository.createQueryBuilder('call')
-            .select("HOUR(call.iat) as hour, COUNT(*) as count")
+        switch (interval) {
+            case "days":
+                past = this.getAllByDays(dStart, dEnd);
+                break;
+            case "hours":
+                past = this.getAllByHours(dStart, dEnd);
+                break;
+            case "minutes":
+                past = this.getAllByMinutes(dStart, dEnd);
+                break;
+            case "months":
+                past = this.getAllByMonths(dStart, dEnd);
+                break;
+            default:
+                past = this.getAllByHours(dStart, dEnd);
+        }
+
+        return past;
+    }
+
+
+    private async getStatsByShort(link: Link, interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
+        let dStart;
+
+        if (!start) {
+            dStart = new Date();
+            dStart.setDate(dStart.getDate() - 1);
+            dStart = new Date(dStart.setTime(dStart.getTime() + (1 * 60 * 60 * 1000)));
+        } else {
+            dStart = new Date(start);
+        }
+
+        let dEnd;
+
+        if (!end) {
+            dEnd = new Date();
+        } else {
+            dEnd = new Date(end);
+        }
+        let past;
+
+
+        switch (interval) {
+            case "days":
+                past = this.getByDays(link, dStart, dEnd);
+                break;
+            case "hours":
+                past = this.getByHours(link, dStart, dEnd);
+                break;
+            case "minutes":
+                past = this.getByMinutes(link, dStart, dEnd);
+                break;
+            case "months":
+                past = this.getByMonths(link, dStart, dEnd);
+                break;
+            default:
+                past = this.getByHours(link, dStart, dEnd);
+        }
+
+        return past;
+    }
+
+    private async getByHours(link: Link, start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
-            .andWhere("call.iat > :iat", {iat: d})
-            .groupBy("HOUR(call.iat)")
+            .andWhere("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat)")
             .execute();
 
-        const pastDayByHours = [];
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), 0, 0);
+            mPastDay.iat = iat;
 
-        for (let i = 0; i < 24; i++) {
-            const call = pastDay.find(fElem => fElem.hour === i);
-            let calls = 0;
+            return mPastDay;
+        })
 
-            if (call) {
-                calls = call.count;
-            }
-            pastDayByHours.push({hour: i, calls: calls > 0 ? calls : 0})
-        }
-        return pastDayByHours;
+        return past;
     }
+
+    private async getByMinutes(link: Link, start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .innerJoin("call.link", "link")
+            .where("link.short = :short", {short: link.short})
+            .andWhere("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat), MINUTE(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
+    private async getByDays(link: Link, start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .innerJoin("call.link", "link")
+            .where("link.short = :short", {short: link.short})
+            .andWhere("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), 0, 0, 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
+    private async getByMonths(link: Link, start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .innerJoin("call.link", "link")
+            .where("link.short = :short", {short: link.short})
+            .andWhere("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), 0, 0, 0, 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
+    private async getAllByHours(start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .where("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), 0, 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
+    private async getAllByMinutes(start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .where("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat), MINUTE(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
+    private async getAllByDays(start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .where("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), 0, 0, 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
+    private async getAllByMonths(start: Date, end: Date) {
+        let past = await this.callRepository.createQueryBuilder('call')
+            .select("call.iat, COUNT(*) as count")
+            .where("call.iat > :start", {start: start})
+            .andWhere("call.iat < :end", {end: end})
+            .groupBy("YEAR(call.iat), MONTH(call.iat)")
+            .execute();
+
+        past = past.map((mPastDay) => {
+            const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), 0, 0, 0, 0);
+            mPastDay.iat = iat;
+
+            return mPastDay;
+        })
+
+        return past;
+    }
+
 
     private async getDistinctCallsByShort(link: Link) {
         let distinctCalls = await this.callRepository.createQueryBuilder('call')

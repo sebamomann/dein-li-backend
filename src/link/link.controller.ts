@@ -50,9 +50,10 @@ export class LinkController {
 
     @Get('all/history')
     getHistoryStatsAll(@Param('short') short: string,
+                       @Query('interval') interval: "minutes" | "hours" | "days",
                        @Res() res: Response,) {
         return this.linkService
-            .getHistoryStats("all", undefined)
+            .getHistoryStats("all", undefined, interval, "", "")
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })
@@ -65,9 +66,12 @@ export class LinkController {
     @UseGuards(AuthGuard('jwt'))
     getHistoryStats(@Usr() user: User,
                     @Param('short') short: string,
+                    @Query('start') start: string,
+                    @Query('end') end: string,
+                    @Query('interval') interval: "minutes" | "hours" | "days" | "months",
                     @Res() res: Response,) {
         return this.linkService
-            .getHistoryStats(short, user)
+            .getHistoryStats(short, user, interval, start, end)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })
