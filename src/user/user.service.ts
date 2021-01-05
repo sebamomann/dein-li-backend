@@ -144,6 +144,42 @@ export class UserService {
         return userMapper.basic(this, savedUser);
     }
 
+    /**
+     * Activate created account (set activated attribute to 1).<br/>
+     * Proper error messages on invalid token or already used
+     *
+     * @param mail String email address of account to activate
+     * @param token String token send with mail on account creation
+     */
+    public async activateAccount(mail: string, token: string) {
+        let user;
+
+        try {
+            user = await this.findByEmail(mail);
+        } catch (e) {
+            throw new EntityGoneException();
+        }
+
+        const verifyingToken = crypto
+            .createHmac('sha256', user.mail + process.env.SALT_MAIL + user.username + user.iat.getTime())
+            .digest('hex');
+
+        const tokenIsValid = verifyingToken === token;
+
+        if (tokenIsValid) {
+            if (!!user.activated === false) {
+                user.activated = true;
+                await this.userRepository.save(user);
+
+                return;
+            }
+
+            throw new AlreadyUsedException(null, 'User is already verified');
+        }
+
+        throw new InvalidTokenException();
+    }
+
     private async _existsByUsername(username: string) {
         return this.findByUsername(username)
             .then(() => {
@@ -196,46 +232,10 @@ export class UserService {
                 },
             })
             .then(() => {
-                // 
+                //
             })
             .catch(() => {
                 //
             });
-    }
-
-    /**
-     * Activate created account (set activated attribute to 1).<br/>
-     * Proper error messages on invalid token or already used
-     *
-     * @param mail String email address of account to activate
-     * @param token String token send with mail on account creation
-     */
-    public async activateAccount(mail: string, token: string) {
-        let user;
-
-        try {
-            user = await this.findByEmail(mail);
-        } catch (e) {
-            throw new EntityGoneException();
-        }
-
-        const verifyingToken = crypto
-            .createHmac('sha256', user.mail + process.env.SALT_MAIL + user.username + user.iat.getTime())
-            .digest('hex');
-
-        const tokenIsValid = verifyingToken === token;
-
-        if (tokenIsValid) {
-            if (!!user.activated === false) {
-                user.activated = true;
-                await this.userRepository.save(user);
-
-                return;
-            }
-
-            throw new AlreadyUsedException(null, 'User is already verified');
-        }
-
-        throw new InvalidTokenException();
     }
 }
