@@ -192,7 +192,7 @@ export class UserService {
                 template: 'register',
                 context: {
                     name: user.username,
-                    url: process.env.DOMAIN + `/activate?mail=${btoa(user.mail).replace(new RegExp(/\=/g), '')}&token=${token}`
+                    url: process.env.DOMAIN + `/account/activate?mail=${btoa(user.mail).replace(new RegExp(/\=/g), '')}&token=${token}`
                 },
             })
             .then(() => {
