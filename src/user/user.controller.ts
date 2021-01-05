@@ -4,6 +4,7 @@ import {User} from "./user.entity";
 
 import {Response} from 'express';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const atob = require('atob');
 
 @Controller('user')

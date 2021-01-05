@@ -12,6 +12,7 @@ import {EntityGoneException} from "../exceptions/EntityGoneException";
 import {AlreadyUsedException} from "../exceptions/AlreadyUsedException";
 import {InvalidTokenException} from "../exceptions/InvalidTokenException";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const btoa = require('btoa');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
