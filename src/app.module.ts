@@ -10,7 +10,14 @@ import {Link} from "./link/link.entity";
 import {User} from "./user/user.entity";
 import {Session} from "./user/session.entity";
 import {Call} from "./link/call/call.entity";
-import {CallModule} from "./link/call/call.module";
+import {CallModule} from "./link/call/call.module";1
+import {MailerModule} from "@nestjs-modules/mailer";
+import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import * as path from 'path';
+
+require('dotenv').config();
+const _password = process.env.MAIL_DEINLI_PASSWORD;
+const _mail = process.env.MAIL_DEINLI;
 
 @Module({
     imports: [
@@ -24,6 +31,19 @@ import {CallModule} from "./link/call/call.module";
             timezone: '+01:00',
             entities: [User, Session, Link, Call],
             synchronize: true
+        }),
+        MailerModule.forRoot({
+            transport: 'smtps://' + _mail + ':' + _password + '@cp.dankoe.de',
+            defaults: {
+                from: '"Seba Momann" <' + _mail + '>',
+            },
+            template: {
+                dir: path.resolve(__dirname, 'templates'),
+                adapter: new HandlebarsAdapter(), // or new PugAdapter()
+                options: {
+                    strict: true,
+                },
+            },
         }),
         UserModule,
         LinkModule,

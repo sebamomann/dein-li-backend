@@ -7,10 +7,10 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "nest build && cpx \"./src/templates/**/*\" \"./dist/templates\"",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "nest start ",
+    "start:dev": "cpx \"./src/templates/**/*\" \"./dist/templates\" && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.5.1",
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/jwt": "^7.2.0",
@@ -30,6 +31,7 @@
     "bcryptjs": "^2.4.3",
     "btoa": "^1.2.1",
     "class-transformer": "^0.3.1",
+    "crypto": "^1.0.1",
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
     "mysql": "^2.18.1",
@@ -63,7 +65,8 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "cpx": "^1.5.0"
   },
   "jest": {
     "moduleFileExtensions": [
