@@ -10,6 +10,7 @@ import {AuthGuard} from '@nestjs/passport';
 
 import {Response} from 'express';
 import {BusinessToHttpExceptionInterceptor} from "../interceptor/BusinessToHttpException.interceptor";
+import {JwtOptStrategy} from "../auth/jwt-opt.strategy";
 
 @Controller('link')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)
@@ -99,7 +100,7 @@ export class LinkController {
     }
 
     @Post()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtOptStrategy)
     create(@Usr() user: User,
            @Body() link: Link,
            @Res() res: Response,) {

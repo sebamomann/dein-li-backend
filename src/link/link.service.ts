@@ -46,8 +46,21 @@ export class LinkService {
                 ]);
         }
 
+        if (!user) {
+            if (link.short) {
+                throw new InsufficientPermissionsException(null,
+                    "Short link can only be set by a logged in user.", [{
+                        "attribute": "short",
+                        "value": link.short
+                    }])
+            }
+
+            linkToDb.creator = null;
+        } else {
+            linkToDb.creator = user;
+        }
+
         linkToDb.original = link.original;
-        linkToDb.creator = user;
         linkToDb.short = await this.linkGenerationAndDuplicateCheck(link.short);
 
         linkToDb = await this.linkRepository.save(linkToDb);
