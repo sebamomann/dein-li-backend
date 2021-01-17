@@ -1,7 +1,8 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Session} from './session.entity';
 import {Link} from "../link/link.entity";
 import {Exclude} from 'class-transformer';
+import {Report} from "../link/report/report.entity";
 
 @Entity()
 export class User {
@@ -38,6 +39,14 @@ export class User {
             onUpdate: 'NO ACTION'
         })
     sessions: Session[];
+
+    @OneToMany(() => Report,
+        report => report.user,
+        {
+            eager: false
+        })
+    @JoinColumn()
+    reports: Report[];
 
     @CreateDateColumn()
     iat: Date;

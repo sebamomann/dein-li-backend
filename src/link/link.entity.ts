@@ -1,6 +1,7 @@
 import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {User} from "../user/user.entity";
 import {Call} from "./call/call.entity";
+import {Report} from "./report/report.entity";
 
 @Entity()
 export class Link {
@@ -31,6 +32,14 @@ export class Link {
         })
     @JoinColumn()
     calls: Call[];
+
+    @OneToMany(() => Report,
+        report => report.link,
+        {
+            eager: false
+        })
+    @JoinColumn()
+    reports: Report[];
 
     @CreateDateColumn()
     iat: Date;
