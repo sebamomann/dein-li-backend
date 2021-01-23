@@ -86,11 +86,15 @@ export class AppController {
             res.set('location', url);
         } else {
             try {
-                const link = await this.linkService.getLinkByShort(short);
+                const link = await this.linkService.getLinkByShortAndReports(short);
 
                 if (link.isActive === 1) {
-                    this.callService.manageLinkCall(link, 1, req.headers['user-agent']);
-                    res.set('location', link.original);
+                    if (link.reports?.length > 0) {
+                        res.set('location', process.env.DOMAIN + "/redirect?success=false&error=threat&short=" + short);
+                    } else {
+                        this.callService.manageLinkCall(link, 1, req.headers['user-agent']);
+                        res.set('location', link.original);
+                    }
                 } else if (link.isActive === -2) {
                     this.callService.manageLinkCall(link, -2, req.headers['user-agent']);
                     res.set('location', process.env.DOMAIN + "/redirect?success=false&error=locked");

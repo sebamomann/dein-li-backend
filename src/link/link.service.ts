@@ -109,6 +109,22 @@ export class LinkService {
         return link;
     }
 
+    public async getLinkByShortAndReports(short: string) {
+        const link = await this.linkRepository.findOne({
+            where: {
+                short,
+                isActive: 1
+            },
+            relations: ["reports"]
+        });
+
+        if (link === undefined) {
+            throw new EntityNotFoundException(null, null, 'link');
+        }
+
+        return link;
+    }
+
     public async get(short: string): Promise<Link> {
         const link = await this.getLinkByShort(short);
 

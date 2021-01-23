@@ -8,7 +8,7 @@ export class Report {
     id: number;
 
     @ManyToOne(() => Link,
-        link => link.reports,
+        link => link.calls,
         {
             eager: false
         })
@@ -23,7 +23,7 @@ export class Report {
     @JoinColumn()
     user: User;
 
-    @Column()
+    @Column('smallint', {default: false})
     isConfirmation: boolean;
 
     @CreateDateColumn()

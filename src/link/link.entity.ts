@@ -34,8 +34,7 @@ export class Link {
     calls: Call[];
 
     @OneToMany(() => Report,
-        report => report.link,
-        {
+        report => report.link, {
             eager: false
         })
     @JoinColumn()
