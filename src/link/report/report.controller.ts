@@ -1,12 +1,13 @@
-import {Body, Controller, HttpStatus, Post, Res, UseGuards} from '@nestjs/common';
+import {Body, Controller, HttpStatus, Post, Res, UseGuards, UseInterceptors} from '@nestjs/common';
 import {JwtOptStrategy} from "../../auth/jwt-opt.strategy";
 import {Usr} from "../../user/user.decorator";
 import {User} from "../../user/user.entity";
-import {Link} from "../link.entity";
 import {Response} from "express";
 import {ReportService} from "./report.service";
+import {BusinessToHttpExceptionInterceptor} from "../../interceptor/BusinessToHttpException.interceptor";
 
 @Controller('report')
+@UseInterceptors(BusinessToHttpExceptionInterceptor)
 export class ReportController {
 
     constructor(private reportService: ReportService) {

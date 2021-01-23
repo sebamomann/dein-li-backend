@@ -17,8 +17,8 @@ export class ReportService {
         const link = await this.linkService.getLinkByShort(short);
 
         const report = new Report();
-        // report.link = link;
-        // report.user = user;
+        report.link = link;
+        report.user = user ? user : null;
         report.isConfirmation = false;
 
         return await this.reportRepository.save(report);
