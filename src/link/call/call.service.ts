@@ -168,7 +168,7 @@ export class CallService {
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
             .andWhere("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat)")
             .execute();
 
@@ -188,7 +188,7 @@ export class CallService {
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
             .andWhere("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat), MINUTE(call.iat)")
             .execute();
 
@@ -208,7 +208,7 @@ export class CallService {
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
             .andWhere("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat)")
             .execute();
 
@@ -228,7 +228,7 @@ export class CallService {
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
             .andWhere("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat)")
             .execute();
 
@@ -246,7 +246,7 @@ export class CallService {
         let past = await this.callRepository.createQueryBuilder('call')
             .select("call.iat, COUNT(*) as count")
             .where("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat)")
             .execute();
 
@@ -264,7 +264,7 @@ export class CallService {
         let past = await this.callRepository.createQueryBuilder('call')
             .select("call.iat, COUNT(*) as count")
             .where("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat), HOUR(call.iat), MINUTE(call.iat)")
             .execute();
 
@@ -282,7 +282,7 @@ export class CallService {
         let past = await this.callRepository.createQueryBuilder('call')
             .select("call.iat, COUNT(*) as count")
             .where("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat), DAY(call.iat)")
             .execute();
 
@@ -300,7 +300,7 @@ export class CallService {
         let past = await this.callRepository.createQueryBuilder('call')
             .select("call.iat, COUNT(*) as count")
             .where("call.iat > :start", {start: start})
-            .andWhere("call.iat < :end", {end: end})
+            .andWhere("call.iat <= :end", {end: end})
             .groupBy("YEAR(call.iat), MONTH(call.iat)")
             .execute();
 
