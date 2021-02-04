@@ -24,9 +24,11 @@ export class LinkController {
     getAll(@Usr() user: User,
            @Query('order_by') orderBy: string,
            @Query('order') order: "ASC" | "DESC",
+           @Query('limit') limit: number,
+           @Query('offset') offset: number,
            @Res() res: Response,) {
         return this.linkService
-            .getAll(user, orderBy, order)
+            .getAll(user, orderBy, order, limit, offset)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })

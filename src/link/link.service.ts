@@ -157,10 +157,10 @@ export class LinkService {
         return links;
     }
 
-    public async getAll(user: User, orderBy: string, order: "ASC" | "DESC") {
+    public async getAll(user: User, orderBy: string, order: "ASC" | "DESC", limit: number, offset: number) {
         let val: Link[];
         if (!orderBy) {
-            val = await this.getAllOrderByIat(user, "DESC");
+            val = await this.getAllOrderByIat(user, "DESC", limit, offset);
         } else {
             if (order !== "ASC" && order !== "DESC") {
                 order = "DESC";
@@ -168,16 +168,16 @@ export class LinkService {
 
             switch (orderBy) {
                 case "calls":
-                    val = await this.getAllOrderByCalls(user, order);
+                    val = await this.getAllOrderByCalls(user, order, limit, offset);
                     break;
                 case "iat":
-                    val = await this.getAllOrderByIat(user, order);
+                    val = await this.getAllOrderByIat(user, order, limit, offset);
                     break;
                 case "calls_version":
-                    val = await this.getAllOrderByCallsVersion(user, order);
+                    val = await this.getAllOrderByCallsVersion(user, order, limit, offset);
                     break;
                 default:
-                    val = await this.getAllOrderByIat(user, order);
+                    val = await this.getAllOrderByIat(user, order, limit, offset);
             }
         }
 
@@ -253,7 +253,7 @@ export class LinkService {
         return _link;
     }
 
-    private async getAllOrderByIat(user: User, order: "ASC" | "DESC") {
+    private async getAllOrderByIat(user: User, order: "ASC" | "DESC", limit: number, offset: number) {
         return await this.linkRepository
             .createQueryBuilder("link")
             .select('*')
@@ -262,17 +262,22 @@ export class LinkService {
             })
             .orderBy({iat: order})
             .groupBy("short")
+            .limit(limit ? limit : null)
+            .offset(offset ? offset : 0)
             .getRawMany();
     }
 
-    private async getAllOrderByCalls(user: User, order: "ASC" | "DESC"): Promise<Link[]> {
+    private async getAllOrderByCalls(user: User, order: "ASC" | "DESC", limit: number, offset: number): Promise<Link[]> {
         const subQuery = this.linkRepository
             .createQueryBuilder("link")
             .select("link.short", "short")
             .addSelect("COUNT(call.id)", "nrOfCalls")
             .leftJoin("call", "call", "call.linkId = link.id")
             .where("link.creatorId = '" + user.id + "'") // okay bcs it comes from jwt
-            .groupBy("short");
+            .orderBy("nrOfCalls", order)
+            .groupBy("short")
+            .limit(limit ? limit : null)
+            .offset(offset ? offset : 0);
 
         const res = await this.linkRepository
             .createQueryBuilder("link")
@@ -285,7 +290,7 @@ export class LinkService {
         return res;
     }
 
-    private async getAllOrderByCallsVersion(user: User, order: "ASC" | "DESC") {
+    private async getAllOrderByCallsVersion(user: User, order: "ASC" | "DESC", limit: number, offset: number) {
         const subQuery = this.linkRepository
             .createQueryBuilder("link")
             .select("link.short", "short")
@@ -293,7 +298,9 @@ export class LinkService {
             .leftJoin("call", "call", "call.linkId = link.id")
             .where("link.creatorId = '" + user.id + "'") // okay bcs it comes from jwt
             .andWhere("link.isActive = " + 1)
-            .groupBy("short");
+            .groupBy("short")
+            .limit(limit ? limit : null)
+            .offset(offset ? offset : 0);
 
         const res = await this.linkRepository
             .createQueryBuilder("link")
