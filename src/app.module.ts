@@ -5,12 +5,9 @@ import {AppService} from './app.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {UserModule} from "./user/user.module";
 import {LinkModule} from "./link/link.module";
-import {AuthModule} from "./auth/auth.module";
 import {Link} from "./link/link.entity";
-import {User} from "./user/user.entity";
-import {Session} from "./user/session.entity";
 import {Call} from "./link/call/call.entity";
-import {CallModule} from "./link/call/call.module";1
+import {CallModule} from "./link/call/call.module";
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import * as path from 'path';
@@ -18,6 +15,7 @@ import {ReportModule} from "./link/report/report.module";
 import {Report} from "./link/report/report.entity";
 
 require('dotenv').config();
+
 const _password = process.env.MAIL_DEINLI_PASSWORD;
 const _mail = process.env.MAIL_DEINLI;
 
@@ -31,7 +29,7 @@ const _mail = process.env.MAIL_DEINLI;
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
             timezone: '+01:00',
-            entities: [User, Session, Link, Call, Report],
+            entities: [Link, Call, Report],
             synchronize: true
         }),
         MailerModule.forRoot({
@@ -49,9 +47,8 @@ const _mail = process.env.MAIL_DEINLI;
         }),
         UserModule,
         LinkModule,
-        AuthModule,
         CallModule,
-        ReportModule
+        ReportModule,
     ],
     controllers: [AppController],
     providers: [AppService],

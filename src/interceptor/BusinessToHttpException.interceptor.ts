@@ -1,6 +1,6 @@
 import {
     BadRequestException,
-    CallHandler,
+    CallHandler, ConflictException,
     ExecutionContext,
     ForbiddenException,
     Injectable,
@@ -17,6 +17,7 @@ import {InsufficientPermissionsException} from '../exceptions/InsufficientPermis
 import {EntityNotFoundException} from '../exceptions/EntityNotFoundException';
 import {AlreadyUsedException} from '../exceptions/AlreadyUsedException';
 import {InvalidAttributesException} from '../exceptions/InvalidAttributesException';
+import {ForbiddenAttributesException} from "../exceptions/ForbiddenAttributesException";
 
 @Injectable()
 export class BusinessToHttpExceptionInterceptor implements NestInterceptor {
@@ -28,9 +29,11 @@ export class BusinessToHttpExceptionInterceptor implements NestInterceptor {
                         if (exception instanceof EntityNotFoundException) {
                             throw new NotFoundException(exception.parse());
                         } else if (exception instanceof AlreadyUsedException) {
-                            throw new BadRequestException(exception.parse());
+                            throw new ConflictException(exception.parse());
                         } else if (exception instanceof UnauthorizedException) {
                             throw new UnauthorizedException();
+                        } else if (exception instanceof ForbiddenAttributesException) {
+                            throw new UnauthorizedException(exception.parse());
                         } else if (exception instanceof InsufficientPermissionsException) {
                             throw new ForbiddenException(exception.parse());
                         } else if (exception instanceof InvalidAttributesException) {

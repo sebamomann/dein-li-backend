@@ -5,12 +5,17 @@ export class InvalidAttributesException extends Exception {
         super();
 
         if (!code) {
-            this.code = 'INVALID_ATTRIBUTE';
+            this.code = 'INVALID_ATTRIBUTES';
         } else {
             this.code = code;
         }
 
-        this.message = message;
+        if (!message) {
+            this.message = "Given attributes can not be processed";
+        } else {
+            this.message = message;
+        }
+
         this.data = data;
     }
 }

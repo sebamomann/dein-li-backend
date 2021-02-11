@@ -1,10 +1,9 @@
-import {Body, Controller, HttpStatus, Post, Res, UseGuards, UseInterceptors} from '@nestjs/common';
-import {JwtOptStrategy} from "../../auth/jwt-opt.strategy";
+import {Body, Controller, HttpStatus, Post, Res, UseInterceptors} from '@nestjs/common';
 import {Usr} from "../../user/user.decorator";
-import {User} from "../../user/user.entity";
 import {Response} from "express";
 import {ReportService} from "./report.service";
 import {BusinessToHttpExceptionInterceptor} from "../../interceptor/BusinessToHttpException.interceptor";
+import {User} from "../../user/user.model";
 
 @Controller('report')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)
@@ -14,7 +13,6 @@ export class ReportController {
     }
 
     @Post()
-    @UseGuards(JwtOptStrategy)
     report(@Usr() user: User,
            @Body("short") short: string,
            @Res() res: Response,) {
