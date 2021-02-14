@@ -1,6 +1,5 @@
 import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
 import {AuthGuard} from "./auth.gurad";
-import {User} from "../user/user.model";
 
 @Injectable()
 export class AuthOptGuard implements CanActivate {
@@ -13,9 +12,15 @@ export class AuthOptGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
 
         if (request.headers.authorization) {
-            return await this.guard.canActivate(context);
+            try {
+                await this.guard.canActivate(context)
+            } catch {
+                request.user = null;
+                // request.headers["X-Valid-Authorization"] = false;
+            }
         } else {
-            request.user = new User();
+            // request.headers.add["X-Valid-Authorization"] = false;
+            request.user = null;
         }
 
         return true;

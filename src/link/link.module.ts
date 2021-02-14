@@ -5,11 +5,11 @@ import {LinkService} from "./link.service";
 import {LinkController} from "./link.controller";
 import {UserModule} from "../user/user.module";
 import {CallModule} from "./call/call.module";
-import {AuthGuard} from "../auth/auth.gurad";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Link]), UserModule, CallModule, HttpModule],
-    providers: [LinkService, AuthGuard],
+    imports: [TypeOrmModule.forFeature([Link]), UserModule, CallModule, AuthModule, HttpModule],
+    providers: [LinkService],
     exports: [LinkService],
     controllers: [LinkController],
 })

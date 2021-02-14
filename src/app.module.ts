@@ -13,6 +13,8 @@ import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars
 import * as path from 'path';
 import {ReportModule} from "./link/report/report.module";
 import {Report} from "./link/report/report.entity";
+import {GlobalModule} from './global/global.module';
+import {AuthModule} from "./auth/auth.module";
 
 require('dotenv').config();
 
@@ -49,6 +51,8 @@ const _mail = process.env.MAIL_DEINLI;
         LinkModule,
         CallModule,
         ReportModule,
+        GlobalModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],

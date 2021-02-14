@@ -27,7 +27,7 @@ module.exports = {
                 id,
                 short,
                 original,
-                nrOfCalls,
+                nrOfCalls: +nrOfCalls ? +nrOfCalls : 0,
                 status: mapActiveValue(isActive),
                 iat,
             }))

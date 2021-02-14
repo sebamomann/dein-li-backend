@@ -33,8 +33,8 @@ export class CallService {
     }
 
     public async getStats(link: Link, interval: "minutes" | "hours" | "days" | "months", start: string, end: string): Promise<IStats> {
-        const totalCalls = await this.getTotalCallsByShort(link);
-        const distinctCalls = await this.getDistinctCallsByShort(link);
+        const totalCalls = await this.getTotalCallsByShort(link, start, end);
+        const distinctCalls = await this.getDistinctCallsByShort(link, start, end);
         const pastDayByHours = await this.getStatsByShort(link, interval, start, end);
 
         return {
@@ -46,8 +46,8 @@ export class CallService {
     }
 
     public async getStatsPreview(link: Link): Promise<IStats> {
-        const totalCalls = await this.getTotalCallsByShort(link);
-        const distinctCalls = await this.getDistinctCallsByShort(link);
+        const totalCalls = await this.getTotalCallsByShort(link, null, null);
+        const distinctCalls = await this.getDistinctCallsByShort(link, null, null);
 
         return {
             total: totalCalls,
@@ -56,17 +56,39 @@ export class CallService {
     }
 
     public async getStatsTotal(interval: "minutes" | "hours" | "days" | "months", start: string, end: string): Promise<IStats> {
+        let dStart;
+
+        if (!start) {
+            dStart = new Date();
+            dStart.setDate(dStart.getDate() - 1);
+            dStart = new Date(dStart.setTime(dStart.getTime() + (1 * 60 * 60 * 1000)));
+        } else {
+            dStart = new Date(start);
+        }
+
+        let dEnd;
+
+        if (!end) {
+            dEnd = new Date();
+        } else {
+            dEnd = new Date(end);
+        }
+
         let totalCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(*) AS count")
+            .where("call.iat > :start", {start: dStart})
+            .andWhere("call.iat <= :end", {end: dEnd})
             .getRawOne();
 
-        totalCalls = totalCalls.count;
+        totalCalls = +totalCalls.count;
 
         let distinctCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(DISTINCT call.agent) AS count")
+            .where("call.iat > :start", {start: start})
+            .andWhere("call.iat <= :end", {end: end})
             .getRawOne();
 
-        distinctCalls = distinctCalls.count;
+        distinctCalls = +distinctCalls.count;
 
         const past = await this.getStatsAll(interval, start, end);
 
@@ -175,6 +197,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -195,6 +218,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -215,6 +239,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -235,6 +260,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -253,6 +279,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -271,6 +298,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -289,6 +317,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -307,6 +336,7 @@ export class CallService {
         past = past.map((mPastDay) => {
             const iat = new Date(mPastDay.iat.getFullYear(), mPastDay.iat.getMonth(), mPastDay.iat.getDate(), mPastDay.iat.getHours(), mPastDay.iat.getMinutes(), mPastDay.iat.getSeconds());
             mPastDay.iat = iat;
+            mPastDay.count = +mPastDay.count;
 
             return mPastDay;
         })
@@ -315,25 +345,67 @@ export class CallService {
     }
 
 
-    private async getDistinctCallsByShort(link: Link) {
+    private async getDistinctCallsByShort(link: Link, start: string, end: string) {
+        let dStart;
+
+        if (!start) {
+            dStart = new Date();
+            dStart.setDate(dStart.getDate() - 1);
+            dStart = new Date(dStart.setTime(dStart.getTime() + (1 * 60 * 60 * 1000)));
+        } else {
+            dStart = new Date(start);
+        }
+
+        let dEnd;
+
+        if (!end) {
+            dEnd = new Date();
+        } else {
+            dEnd = new Date(end);
+        }
+        let past;
+
         let distinctCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(DISTINCT call.agent) AS count")
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
+            .andWhere("call.iat > :start", {start: dStart})
+            .andWhere("call.iat <= :end", {end: dEnd})
             .getRawOne();
 
-        distinctCalls = distinctCalls.count;
+        distinctCalls = +distinctCalls.count;
         return distinctCalls;
     }
 
-    private async getTotalCallsByShort(link: Link) {
+    private async getTotalCallsByShort(link: Link, start: string, end: string) {
+        let dStart;
+
+        if (!start) {
+            dStart = new Date();
+            dStart.setDate(dStart.getDate() - 1);
+            dStart = new Date(dStart.setTime(dStart.getTime() + (1 * 60 * 60 * 1000)));
+        } else {
+            dStart = new Date(start);
+        }
+
+        let dEnd;
+
+        if (!end) {
+            dEnd = new Date();
+        } else {
+            dEnd = new Date(end);
+        }
+        let past;
+
         let totalCalls = await this.callRepository.createQueryBuilder('call')
             .select("COUNT(*) AS count")
             .innerJoin("call.link", "link")
             .where("link.short = :short", {short: link.short})
+            .andWhere("call.iat > :start", {start: dStart})
+            .andWhere("call.iat <= :end", {end: dEnd})
             .getRawOne();
 
-        totalCalls = totalCalls.count;
+        totalCalls = +totalCalls.count;
         return totalCalls;
     }
 }

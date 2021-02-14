@@ -5,7 +5,7 @@ export class ForbiddenAttributesException extends Exception {
         super();
 
         if (!code) {
-            this.code = 'UNAUTHORIZED';
+            this.code = 'FORBIDDEN_ATTRIBUTES';
         } else {
             this.code = code;
         }

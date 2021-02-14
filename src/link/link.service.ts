@@ -95,8 +95,10 @@ export class LinkService {
     public async getLinkByShort(short: string) {
         const link = await this.linkRepository.findOne({
             where: {
-                short,
-                isActive: 1
+                short
+            },
+            order: {
+                iat: "DESC"
             }
         });
 
@@ -133,24 +135,28 @@ export class LinkService {
         return linkMapper.basic(link);
     }
 
-    public async getHistoryStats(short: string, user: User, interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
-        let stats;
-
+    public async getStats(short: string, user: User, interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
         if (!interval) {
             interval = "hours"
         }
 
-        if (short !== "all") {
-            stats = await this.getLinkStatsByShort(short, user, interval, start, end);
-        } else {
-            stats = await this.getLinkStatsTotal(interval, start, end);
-        }
-
-        return stats;
+        return await this.getLinkStatsByShort(short, user, interval, start, end);
     }
 
+    public async getStatsAll(user: User, interval: "minutes" | "hours" | "days" | "months", start: string, end: string) {
+        if (!interval) {
+            interval = "hours"
+        }
+
+        return await this.getLinkStatsTotal(interval, start, end);
+    }
+
+
+    // TODO
+    // 403 forbidden
+
     public async getVersions(short: string, user: User) {
-        let links = await this.linkRepository.find({where: {short, creator: user}, order: {iat: "DESC"}})
+        let links = await this.linkRepository.find({where: {short, creatorId: user.sub}, order: {iat: "DESC"}})
 
         if (links.length <= 0) {
             throw new EntityNotFoundException(null, null, {
@@ -167,27 +173,36 @@ export class LinkService {
         return links;
     }
 
-    public async getAll(user: User, orderBy: string, order: "ASC" | "DESC", limit: number, offset: number) {
+    public async getAll(user: User, sort: string, limit: number, offset: number) {
         let val: Link[];
-        if (!orderBy) {
+        if (!sort) {
             val = await this.getAllOrderByIat(user, "DESC", limit, offset);
         } else {
-            if (order !== "ASC" && order !== "DESC") {
-                order = "DESC";
+            let orderDirection;
+            let sortParameter;
+
+            if (!sort.startsWith("-") && !sort.startsWith(" ")) { // + gets replaced by space
+                orderDirection = "-";
+                sortParameter = sort;
+            } else {
+                // TODO ENUM?
+                orderDirection = sort.slice(0, 1);
+                orderDirection = orderDirection === "-" ? "DESC" : "ASC";
+                sortParameter = sort.slice(1);
             }
 
-            switch (orderBy) {
+            switch (sortParameter) {
                 case "calls":
-                    val = await this.getAllOrderByCalls(user, order, limit, offset);
+                    val = await this.getAllOrderByCalls(user, orderDirection, limit, offset);
                     break;
                 case "iat":
-                    val = await this.getAllOrderByIat(user, order, limit, offset);
+                    val = await this.getAllOrderByIat(user, orderDirection, limit, offset);
                     break;
                 case "calls_version":
-                    val = await this.getAllOrderByCallsVersion(user, order, limit, offset);
+                    val = await this.getAllOrderByCallsVersion(user, orderDirection, limit, offset);
                     break;
                 default:
-                    val = await this.getAllOrderByIat(user, order, limit, offset);
+                    val = await this.getAllOrderByIat(user, orderDirection, limit, offset);
             }
         }
 
@@ -254,10 +269,11 @@ export class LinkService {
 
         if (_link.creatorId !== user.sub) {
             throw new InsufficientPermissionsException(null,
-                "Missing permissions to generate new version for specified Link", [
+                null, [
                     {
                         "attribute": "short",
-                        "value": short
+                        "value": short,
+                        "message": "Specified link is not in your ownership"
                     }
                 ]);
         }
@@ -266,17 +282,38 @@ export class LinkService {
     }
 
     private async getAllOrderByIat(user: User, order: "ASC" | "DESC", limit: number, offset: number) {
-        return await this.linkRepository
+        const subQuery = this.linkRepository
             .createQueryBuilder("link")
-            .select('*')
-            .where("creatorId = :userId", {
-                userId: user.sub
-            })
-            .orderBy({iat: order})
+            .select("link.short", "short")
+            .addSelect("COUNT(call.id)", "nrOfCalls")
+            .leftJoin("call", "call", "call.linkId = link.id")
+            .where("link.creatorId = '" + user.sub + "'") // okay bcs it comes from jwt
+            .orderBy("link.iat", order)
             .groupBy("short")
             .limit(limit ? limit : null)
-            .offset(offset ? offset : 0)
+            .offset(offset ? offset : 0);
+
+        const res = await this.linkRepository
+            .createQueryBuilder("link")
+            .select("link.*, CONVERT(sub.nrOfCalls, UNSIGNED INTEGER) as nrOfCalls")
+            .innerJoin("(" + subQuery.getQuery() + ")", "sub", "link.short = sub.short")
+            .where("link.isActive = :isActive", {isActive: 1})
+            .orderBy("link.iat", order)
             .getRawMany();
+
+        return res;
+
+        // return await this.linkRepository
+        //     .createQueryBuilder("link")
+        //     .select('*')
+        //     .where("creatorId = :userId", {
+        //         userId: user.sub
+        //     })
+        //     .orderBy({iat: order})
+        //     .groupBy("short")
+        //     .limit(limit ? limit : null)
+        //     .offset(offset ? offset : 0)
+        //     .getRawMany();
     }
 
     private async getAllOrderByCalls(user: User, order: "ASC" | "DESC", limit: number, offset: number): Promise<Link[]> {
@@ -287,13 +324,14 @@ export class LinkService {
             .leftJoin("call", "call", "call.linkId = link.id")
             .where("link.creatorId = '" + user.sub + "'") // okay bcs it comes from jwt
             .orderBy("nrOfCalls", order)
+            .orderBy("link.iat", "DESC")
             .groupBy("short")
             .limit(limit ? limit : null)
             .offset(offset ? offset : 0);
 
         const res = await this.linkRepository
             .createQueryBuilder("link")
-            .select("link.*, sub.nrOfCalls")
+            .select("link.*, CONVERT(sub.nrOfCalls, UNSIGNED INTEGER) as nrOfCalls")
             .innerJoin("(" + subQuery.getQuery() + ")", "sub", "link.short = sub.short")
             .where("link.isActive = :isActive", {isActive: 1})
             .orderBy("sub.nrOfCalls", order)

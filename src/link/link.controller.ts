@@ -32,14 +32,14 @@ export class LinkController {
 
 
     @Get()
+    @UseGuards(AuthGuard)
     getAll(@Usr() user: User,
-           @Query('order_by') orderBy: string,
-           @Query('order') order: "ASC" | "DESC",
+           @Query('sort') sort: string,
            @Query('limit') limit: number,
            @Query('offset') offset: number,
            @Res() res: Response,) {
         return this.linkService
-            .getAll(user, orderBy, order, limit, offset)
+            .getAll(user, sort, limit, offset)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })
@@ -49,6 +49,7 @@ export class LinkController {
     }
 
     @Post()
+    @UseGuards(AuthOptGuard)
     create(@Usr() user: User,
            @Body() link: Link,
            @Res() res: Response,) {
@@ -64,7 +65,7 @@ export class LinkController {
     }
 
     @Get(':short')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthOptGuard)
     getLinkByShort(@Usr() user: User,
                    @Param('short') short: string,
                    @Res() res: Response,) {
@@ -79,7 +80,7 @@ export class LinkController {
     }
 
     @Put(':short')
-    // @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard)
     newVersion(@Usr() user: User,
                @Param('short') short: string,
                @Body() link: Link,
@@ -95,7 +96,7 @@ export class LinkController {
     }
 
     @Get(':short/versions')
-    // @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard)
     getVersions(@Usr() user: User,
                 @Param('short') short: string,
                 @Res() res: Response,) {
@@ -109,8 +110,8 @@ export class LinkController {
             });
     }
 
-    @Get(':short/history')
-    @UseGuards(AuthOptGuard)
+    @Get(':short/statistics')
+    @UseGuards(AuthGuard)
     getHistoryStats(@Usr() user: User,
                     @Param('short') short: string,
                     @Query('start') start: string,
@@ -118,12 +119,11 @@ export class LinkController {
                     @Query('interval') interval: "minutes" | "hours" | "days" | "months",
                     @Res() res: Response,) {
         return this.linkService
-            .getHistoryStats(short, user, interval, start, end)
+            .getStats(short, user, interval, start, end)
             .then(tLink => {
                 res.status(HttpStatus.OK).json(tLink);
             })
             .catch((err) => {
-                console.log(err);
                 throw err;
             });
     }
