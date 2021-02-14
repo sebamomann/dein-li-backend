@@ -53,10 +53,13 @@ pipeline {
                     sh 'docker run -d ' +
                             '--name ' + container_database_name + ' ' +
                             '--env MYSQL_ROOT_PASSWORD=password ' +
+                            '--env MYSQL_USER=user ' +
+                            '--env MYSQL_PASSWORD=password ' +
                             '--env MYSQL_DATABASE=dein-li-newman ' +
                             '--network ' + network_name + ' ' +
                             '--health-cmd=\'mysqladmin ping --silent\' ' +
                             'mariadb:10.3 '
+                            'mysqld --default-authentication-plugin=mysql_native_password'
 
                     timeout(60) {
                         waitUntil {
