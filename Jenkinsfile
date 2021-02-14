@@ -81,6 +81,9 @@ pipeline {
                             '--env DB_PORT=3306 ' +
                             '--env DB_DATABASE=dein-li-newman ' +
                             '--env NODE_ENV=newman ' +
+                            '--env KEYCLOAK_URL=https://account.sebamomann.de ' +
+                            '--env KEYCLOAK_REALM=test ' +
+                            '--env KEYCLOAK_CLIENT-ID=test ' +
                             '--network ' + network_name + ' ' + 1
                     '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
                             '--health-interval=2s ' +
