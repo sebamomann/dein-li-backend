@@ -68,11 +68,6 @@ pipeline {
                         }
                     }
 
-                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
-                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
-                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_III_calls-get-statistics.sql'
-                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_IV_calls-noise.sql'
-
                     sh 'docker run -d ' +
                             '--name ' + container_backend_name + ' ' +
                             '--env SALT_JWT=salt ' +
@@ -98,6 +93,11 @@ pipeline {
                                     script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
                         }
                     }
+
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_III_calls-get-statistics.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_IV_calls-noise.sql'
                 }
             }
         }
@@ -111,7 +111,7 @@ pipeline {
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
                             'collection.json ' +
-                            '--environment="HTTPBinNewmanTest.json.postman_environment" ' +
+                            '--environment="environment.json.postman_environment" ' +
                             '--delay-request 0 ' +
                             '-n 1 ' +
                             '--bail'
