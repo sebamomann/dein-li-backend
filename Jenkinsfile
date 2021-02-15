@@ -119,7 +119,7 @@ pipeline {
                             '-t postman/newman:alpine ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
-                            '--env-var baseUrl=' + container_backend_name + ' ' +
+                            '--env-var baseUrl=' + container_backend_name + ':3000 ' +
                             '-n 1 ' +
                             '--bail'
                 }
