@@ -53,7 +53,11 @@ pipeline {
                     }
                 }
                 script {
-                    sh 'CONTAINER_NAME=' + container_database_name + ' NETWORK_NAME=' + network_name + ' docker-compose -f ./mysql.docker-compose.yml up --detach'
+                    sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
+                        'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                        'NETWORK_NAME=' + network_name + ' ' +
+                        'docker-compose -f mysql.docker-compose.yml up ' +
+                        '--detach'
 //                            '' +
 //                            '' +
 //                            ' run -d ' +
@@ -66,32 +70,32 @@ pipeline {
 //                            '--health-cmd=\'mysqladmin ping --silent\' ' +
 //                            'mariadb:10.3 '
 //                            'mysqld --default-authentication-plugin=mysql_native_password'
+//
+//                    timeout(60) {
+//                        waitUntil {
+//                            "healthy" == sh(returnStdout: true,
+//                                    script: "docker inspect " + container_database_name + " --format=\"{{ .State.Health.Status }}\"").trim()
+//                        }
+//                    }
 
-                    timeout(60) {
-                        waitUntil {
-                            "healthy" == sh(returnStdout: true,
-                                    script: "docker inspect " + container_database_name + " --format=\"{{ .State.Health.Status }}\"").trim()
-                        }
-                    }
-
-                    sh 'docker run -d ' +
-                            '--name ' + container_backend_name + ' ' +
-                            '--env SALT_JWT=salt ' +
-                            '--env SALT_MAIL=salt ' +
-                            '--env API_URL=' + container_backend_name + ':3000 ' +
-                            '--env DB_USERNAME=user ' +
-                            '--env DB_PASSWORD=password ' +
-                            '--env DB_HOST=' + container_database_name + ' ' +
-                            '--env DB_PORT=3306 ' +
-                            '--env DB_DATABASE=dein-li-newman ' +
-                            '--env NODE_ENV=newman ' +
-                            '--env KEYCLOAK_URL=https://account.sebamomann.de ' +
-                            '--env KEYCLOAK_REALM=test ' +
-                            '--env KEYCLOAK_CLIENT-ID=test ' +
-                            '--network ' + network_name + ' ' +
-                            '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
-                            '--health-interval=2s ' +
-                            'dein-li/dein-li-backend:' + tag_name
+//                    sh 'docker run -d ' +
+//                            '--name ' + container_backend_name + ' ' +
+//                            '--env SALT_JWT=salt ' +
+//                            '--env SALT_MAIL=salt ' +
+//                            '--env API_URL=' + container_backend_name + ':3000 ' +
+//                            '--env DB_USERNAME=user ' +
+//                            '--env DB_PASSWORD=password ' +
+//                            '--env DB_HOST=' + container_database_name + ' ' +
+//                            '--env DB_PORT=3306 ' +
+//                            '--env DB_DATABASE=dein-li-newman ' +
+//                            '--env NODE_ENV=newman ' +
+//                            '--env KEYCLOAK_URL=https://account.sebamomann.de ' +
+//                            '--env KEYCLOAK_REALM=test ' +
+//                            '--env KEYCLOAK_CLIENT-ID=test ' +
+//                            '--network ' + network_name + ' ' +
+//                            '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
+//                            '--health-interval=2s ' +
+//                            'dein-li/dein-li-backend:' + tag_name
 
                     timeout(60) {
                         waitUntil {
