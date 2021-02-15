@@ -57,7 +57,7 @@ pipeline {
                     sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
                         'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                         'API_IMAGE_NAME=' + api_image_name + ' ' +
-                        'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' '
+                        'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
                         'NETWORK_NAME=' + network_name + ' ' +
                         'docker-compose -f mysql.docker-compose.yml up ' +
                         '--detach'
@@ -129,10 +129,10 @@ pipeline {
 //                            '-t postman/newman:alpine ' +
                     sh 'docker exec -i ' + container_newman_name + ' ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
-                            '--environment="environment.json.postman_environment" ' +
-                            '--env-var baseUrl=' + container_backend_name + ':3000 ' +
-                            '-n 1 ' +
-                            '--bail'
+                                '--environment="environment.json.postman_environment" ' +
+                                '--env-var baseUrl=' + container_backend_name + ':3000 ' +
+                                '-n 1 ' +
+                                '--bail'
                 }
             }
         }
