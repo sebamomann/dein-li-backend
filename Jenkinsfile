@@ -122,7 +122,7 @@ pipeline {
                         'COMMIT_HASH=' + commit_hash + ' ' +
                         'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                         'NETWORK_NAME=' + network_name + ' ' +
-                        'docker-compose -f newman-prepare.docker-compose.yml up ' +
+                        'docker-compose -f newman-execute.docker-compose.yml up ' +
                         '--detach'
 //                    def environmentVars = readFile file: "/var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment"
 //                    environmentVars = environmentVars.replaceAll("{{baseUrl}}", container_backend_name)
