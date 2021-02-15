@@ -1,0 +1,22 @@
+version: "2.2"
+services:
+  mysql:
+    image: 'mariadb:10.3'
+    container_name: ${CONTAINER_NAME}
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=dein-li-newman
+      - SESSION_SECRET
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    networks:
+      - ${NETWORK_NAME}
+networks:
+  ${NETWORK_NAME}:
+    external: true
