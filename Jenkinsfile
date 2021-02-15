@@ -27,9 +27,9 @@ pipeline {
             steps {
                 script {
                     updateStatus("pending")
+                    commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                    echo "COMMIT HASH: ${commit_hash}"
                 }
-                commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                echo "COMMIT HASH: ${commit_hash}"
             }
         }
 
