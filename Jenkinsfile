@@ -82,7 +82,7 @@ pipeline {
                             '--env KEYCLOAK_URL=https://account.sebamomann.de ' +
                             '--env KEYCLOAK_REALM=test ' +
                             '--env KEYCLOAK_CLIENT-ID=test ' +
-                            '--network ' + network_name + ' ' + 1
+                            '--network ' + network_name + ' ' +
                             '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
                             '--health-interval=2s ' +
                             'dein-li/dein-li-backend:' + tag_name
