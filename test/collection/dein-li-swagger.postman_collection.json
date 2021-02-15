@@ -6030,6 +6030,8 @@
 											"    pm.response.to.have.jsonSchema(schema);\r",
 											"});\r",
 											"\r",
+											"console.log(pm.response.json());",
+											"\r",
 											"pm.test(\"Correct JSON response data\", function () {\r",
 											"    var jsonData = pm.response.json();\r",
 											"    \r",
