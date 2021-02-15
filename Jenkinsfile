@@ -1,7 +1,7 @@
 def image
 def branch_name = "${env.BRANCH_NAME}" as String
 def build_number = "${env.BUILD_NUMBER}" as String
-def commit_hash
+def commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
 def tag_name = 'jb_' + branch_name + "_" + build_number
 
@@ -27,9 +27,15 @@ pipeline {
         stage('Preamble') {
             steps {
                 script {
+                    echo 'Updating status'
                     updateStatus("pending")
-                    commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                }
+                script {
+                    echo 'Control Variables'
+                    echo '-------------------'
                     echo "COMMIT HASH: ${commit_hash}"
+                    echo "BRANCH NAME: ${branch_name}"
+                    echo "BUILD NUMBER: ${build_number}"
                 }
             }
         }
@@ -42,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Newman prepare') {
+        stage('Newman - prepare API') {
             steps {
                 script {
                     echo 'Spinup network'
@@ -55,58 +61,25 @@ pipeline {
                 }
                 script {
                     sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
-                        'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
-                        'API_IMAGE_NAME=' + api_image_name + ' ' +
-                        'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
-                        'NETWORK_NAME=' + network_name + ' ' +
-                        'docker-compose -f newman-prepare.docker-compose.yml up ' +
-                        '--detach'
-//                            '' +
-//                            '' +
-//                            ' run -d ' +
-//                            '--name ' + container_database_name + ' ' +
-//                            '--env MYSQL_ROOT_PASSWORD=password ' +
-//                            '--env MYSQL_USER=user ' +
-//                            '--env MYSQL_PASSWORD=password ' +
-//                            '--env MYSQL_DATABASE=dein-li-newman ' +
-//                            '--network ' + network_name + ' ' +
-//                            '--health-cmd=\'mysqladmin ping --silent\' ' +
-//                            'mariadb:10.3 '
-//                            'mysqld --default-authentication-plugin=mysql_native_password'
-//
-//                    timeout(60) {
-//                        waitUntil {
-//                            "healthy" == sh(returnStdout: true,
-//                                    script: "docker inspect " + container_database_name + " --format=\"{{ .State.Health.Status }}\"").trim()
-//                        }
-//                    }
+                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                            'API_IMAGE_NAME=' + api_image_name + ' ' +
+                            'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+                            'NETWORK_NAME=' + network_name + ' ' +
+                            'docker-compose -f newman-prepare.docker-compose.yml up ' +
+                            '--detach'
 
-//                    sh 'docker run -d ' +
-//                            '--name ' + container_backend_name + ' ' +
-//                            '--env SALT_JWT=salt ' +
-//                            '--env SALT_MAIL=salt ' +
-//                            '--env API_URL=' + container_backend_name + ':3000 ' +
-//                            '--env DB_USERNAME=user ' +
-//                            '--env DB_PASSWORD=password ' +
-//                            '--env DB_HOST=' + container_database_name + ' ' +
-//                            '--env DB_PORT=3306 ' +
-//                            '--env DB_DATABASE=dein-li-newman ' +
-//                            '--env NODE_ENV=newman ' +
-//                            '--env KEYCLOAK_URL=https://account.sebamomann.de ' +
-//                            '--env KEYCLOAK_REALM=test ' +
-//                            '--env KEYCLOAK_CLIENT-ID=test ' +
-//                            '--network ' + network_name + ' ' +
-//                            '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
-//                            '--health-interval=2s ' +
-//                            'dein-li/dein-li-backend:' + tag_name
-//
                     timeout(5) {
                         waitUntil {
                             "healthy" == sh(returnStdout: true,
                                     script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
                         }
                     }
-
+                }
+            }
+        }
+        stage('Newman - populate database') {
+            steps {
+                script {
                     sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
                     sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
                     sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_III_calls-get-statistics.sql'
@@ -115,37 +88,15 @@ pipeline {
             }
         }
 
-        stage('Newman exec') {
+        stage('Newman - execute') {
             steps {
                 script {
                     sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' \\' +
-                        'COMMIT_HASH=' + commit_hash + ' ' +
-                        'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
-                        'NETWORK_NAME=' + network_name + ' ' +
-                        'docker-compose -f newman-execute.docker-compose.yml up ' +
-                        '--detach'
-//                    def environmentVars = readFile file: "/var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment"
-//                    environmentVars = environmentVars.replaceAll("{{baseUrl}}", container_backend_name)
-//                    writeFile file: "./dein-li-newman.postman_environment", text: environmentVars
-//                    sh 'docker run ' +
-//                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
-//                            '--name ' + container_newman_name + ' ' +
-//                            '-p 3000:3000 ' +
-//                            '--net ' + network_name + ' ' +
-//                            '-t postman/newman:alpine ' +
-//                    timeout(60) {
-//                        waitUntil {
-//                            "healthy" == sh(returnStdout: true,
-//                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Running }}\"").trim()
-//                        }
-//                    }
-//
-//                    sh 'docker exec -i ' + container_newman_name + ' ' +
-//                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
-//                                '--environment="environment.json.postman_environment" ' +
-//                                '--env-var baseUrl=' + container_backend_name + ':3000 ' +
-//                                '-n 1 ' +
-//                                '--bail'
+                            'COMMIT_HASH=' + commit_hash + ' ' +
+                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                            'NETWORK_NAME=' + network_name + ' ' +
+                            'docker-compose -f newman-execute.docker-compose.yml up ' +
+                            '--detach'
                 }
             }
         }
