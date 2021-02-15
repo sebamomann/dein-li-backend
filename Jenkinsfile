@@ -1,7 +1,7 @@
 def image
 def branch_name = "${env.BRANCH_NAME}" as String
 def build_number = "${env.BUILD_NUMBER}" as String
-def commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+def commit_hash
 
 def tag_name = 'jb_' + branch_name + "_" + build_number
 
@@ -31,6 +31,8 @@ pipeline {
                     updateStatus("pending")
                 }
                 script {
+                    commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+
                     echo 'Control Variables'
                     echo '-------------------'
                     echo "COMMIT HASH: ${commit_hash}"
@@ -91,12 +93,14 @@ pipeline {
         stage('Newman - execute') {
             steps {
                 script {
-                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' \\' +
-                            'COMMIT_HASH=' + commit_hash + ' ' +
-                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
-                            'NETWORK_NAME=' + network_name + ' ' +
-                            'docker-compose -f newman-execute.docker-compose.yml up ' +
-                            '--detach'
+                    sh '''
+                            NEWMAN_CONTAINER_NAME=$container_newman_name
+                            COMMIT_HASH=$commit_hash
+                            BACKEND_CONTAINER_NAME=$container_backend_name
+                            NETWORK_NAME=$network_name
+                            docker-compose -f newman-execute.docker-compose.yml up
+                            --detach
+                        '''
                 }
             }
         }
