@@ -1,7 +1,7 @@
-TRUNCATE TABLE `link`;
-TRUNCATE TABLE `call`;
-TRUNCATE TABLE `report`;
- 
+-- TRUNCATE TABLE `link`;
+-- TRUNCATE TABLE `call`;
+-- TRUNCATE TABLE `report`;
+--
 
 
 
