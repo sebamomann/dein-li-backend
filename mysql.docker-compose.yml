@@ -18,7 +18,7 @@ services:
     networks:
       - network
   backend:
-    image: ${API_IMAGE}
+    image: ${API_IMAGE_NAME}
     container_name: ${BACKEND_CONTAINER_NAME}
     depends_on:
       - mysql
@@ -28,7 +28,7 @@ services:
       - API_URL=${BACKEND_CONTAINER_NAME}:3000
       - DB_USERNAME=user
       - DB_PASSWORD=password
-      - DB_HOST=MYSQL_CONTAINER_NAME
+      - DB_HOST=${MYSQL_CONTAINER_NAME}
       - DB_PORT=3306
       - DB_DATABASE=dein-li-newman
       - NODE_ENV=newman

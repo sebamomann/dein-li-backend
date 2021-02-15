@@ -55,6 +55,7 @@ pipeline {
                 script {
                     sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
                         'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                        'API_IMAGE_NAME=dein-li/dein-li-backend:' + tag_name + ' ' +
                         'NETWORK_NAME=' + network_name + ' ' +
                         'docker-compose -f mysql.docker-compose.yml up ' +
                         '--detach'
