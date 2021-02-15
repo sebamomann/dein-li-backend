@@ -220,7 +220,7 @@ pipeline {
                 updateStatus("success")
 
                 try {
-                    sh 'docker image prune --filter label=stage=intermediate -f'
+                    sh 'docker image prune --filter label=stage=intermediate -f --volumes'
                 } catch (err) {
                     echo err.getMessage()
                 }
