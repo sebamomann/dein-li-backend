@@ -99,7 +99,7 @@ pipeline {
 //                            '--health-interval=2s ' +
 //                            'dein-li/dein-li-backend:' + tag_name
 
-                    timeout(60) {
+                    timeout(5) {
                         waitUntil {
                             "healthy" == sh(returnStdout: true,
                                     script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
