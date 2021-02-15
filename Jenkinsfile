@@ -57,6 +57,7 @@ pipeline {
                     sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
                         'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                         'API_IMAGE_NAME=' + api_image_name + ' ' +
+                        'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' '
                         'NETWORK_NAME=' + network_name + ' ' +
                         'docker-compose -f mysql.docker-compose.yml up ' +
                         '--detach'
@@ -98,13 +99,13 @@ pipeline {
 //                            '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
 //                            '--health-interval=2s ' +
 //                            'dein-li/dein-li-backend:' + tag_name
-
-                    timeout(5) {
-                        waitUntil {
-                            "healthy" == sh(returnStdout: true,
-                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
-                        }
-                    }
+//
+//                    timeout(5) {
+//                        waitUntil {
+//                            "healthy" == sh(returnStdout: true,
+//                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
+//                        }
+//                    }
 
                     sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
                     sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
@@ -120,12 +121,13 @@ pipeline {
 //                    def environmentVars = readFile file: "/var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment"
 //                    environmentVars = environmentVars.replaceAll("{{baseUrl}}", container_backend_name)
 //                    writeFile file: "./dein-li-newman.postman_environment", text: environmentVars
-                    sh 'docker run ' +
-                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
-                            '--name ' + container_newman_name + ' ' +
-                            '-p 3000:3000 ' +
-                            '--net ' + network_name + ' ' +
-                            '-t postman/newman:alpine ' +
+//                    sh 'docker run ' +
+//                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
+//                            '--name ' + container_newman_name + ' ' +
+//                            '-p 3000:3000 ' +
+//                            '--net ' + network_name + ' ' +
+//                            '-t postman/newman:alpine ' +
+                    sh 'docker exec -i ' + container_newman_name + ' ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
                             '--env-var baseUrl=' + container_backend_name + ':3000 ' +
