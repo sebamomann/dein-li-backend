@@ -108,7 +108,7 @@ pipeline {
         stage('Newman exec') {
             steps {
                 script {
-                    def environmentVars = readFile file: "./gjm-test.postman_collection.json"
+                    def environmentVars = readFile file: "/var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment"
                     environmentVars = environmentVars.replaceAll("{{baseUrl}}", container_backend_name)
                     writeFile file: "./dein-li-newman.postman_environment", text: environmentVars
                     sh 'docker run ' +
