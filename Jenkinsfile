@@ -106,12 +106,12 @@ pipeline {
             steps {
                 script {
                     sh 'docker run ' +
-                            '-v $(pwd)/test/dein-li-swagger.postman_collection.json:/etc/newman/collection.json ' +
+                            '-v $(pwd)/test:/etc/newman ' +
                             '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
                             '--name ' + container_newman_name + ' ' +
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
-                            'run "collection.json" ' +
+                            'run "dein-li-swagger.postman_collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
                             '-n 1 ' +
                             '--bail'
