@@ -83,7 +83,7 @@ pipeline {
                             '--env KEYCLOAK_REALM=test ' +
                             '--env KEYCLOAK_CLIENT-ID=test ' +
                             '--network ' + network_name + ' ' + 1
-                    '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
+                            '--health-cmd=\'curl localhost:3000/healthcheck || exit 1 \' ' +
                             '--health-interval=2s ' +
                             'dein-li/dein-li-backend:' + tag_name
 
@@ -107,6 +107,7 @@ pipeline {
                 script {
                     sh 'docker run ' +
                             '-v $(pwd)/test/dein-li-swagger.postman_collection.json:/etc/newman/collection.json ' +
+                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment' +
                             '--name ' + container_newman_name + ' ' +
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
