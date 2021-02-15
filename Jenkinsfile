@@ -111,9 +111,8 @@ pipeline {
                             '--name ' + container_newman_name + ' ' +
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
-                            'run collection.json ' +
+                            'run "collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
-                            '--delay-request 0 ' +
                             '-n 1 ' +
                             '--bail'
                 }
