@@ -130,7 +130,7 @@ pipeline {
                     timeout(60) {
                         waitUntil {
                             "healthy" == sh(returnStdout: true,
-                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Health.Status }}\"").trim()
+                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Running }}\"").trim()
                         }
                     }
 
