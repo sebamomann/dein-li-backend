@@ -1,7 +1,7 @@
 def image
 def branch_name = "${env.BRANCH_NAME}" as String
 def build_number = "${env.BUILD_NUMBER}" as String
-def commit_hash = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
+def commit_hash = "${env.GIT_COMMIT}" as String
 
 def tag_name = 'jb_' + branch_name + "_" + build_number
 
