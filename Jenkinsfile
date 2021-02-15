@@ -108,8 +108,11 @@ pipeline {
         stage('Newman exec') {
             steps {
                 script {
+                    def text = environmentVars file: "/var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment"
+                    text = text.replaceAll("{{baseUrl}}", "container_backend_name")
+                    writeFile file: "./dein-li-newman.postman_environment", text: text
                     sh 'docker run ' +
-                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
+                            '-v $(pwd)/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
                             '--name ' + container_newman_name + ' ' +
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
