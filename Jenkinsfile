@@ -127,6 +127,13 @@ pipeline {
 //                            '-p 3000:3000 ' +
 //                            '--net ' + network_name + ' ' +
 //                            '-t postman/newman:alpine ' +
+                    timeout(60) {
+                        waitUntil {
+                            "healthy" == sh(returnStdout: true,
+                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Health.Status }}\"").trim()
+                        }
+                    }
+
                     sh 'docker exec -i ' + container_newman_name + ' ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
                                 '--environment="environment.json.postman_environment" ' +
