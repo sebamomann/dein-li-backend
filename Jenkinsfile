@@ -5,6 +5,7 @@ def commit_hash
 
 def tag_name = 'jb_' + branch_name + "_" + build_number
 
+def api_image_name = 'dein-li/dein-li-backend:' + tag_name
 def container_database_name = 'dein-li_newman-testing_db_' + tag_name
 def container_newman_name = 'dein-li_newman-testing_newman_' + tag_name
 def container_backend_name = 'dein-li_newman-testing_backend_' + tag_name
@@ -36,7 +37,7 @@ pipeline {
         stage('Build Docker image') {
             steps {
                 script {
-                    image = docker.build("dein-li/dein-li-backend:" + tag_name)
+                    image = docker.build(api_image_name)
                 }
             }
         }
@@ -55,7 +56,7 @@ pipeline {
                 script {
                     sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
                         'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
-                        'API_IMAGE_NAME=dein-li/dein-li-backend:' + tag_name + ' ' +
+                        'API_IMAGE_NAME=' + api_image_name + ' ' +
                         'NETWORK_NAME=' + network_name + ' ' +
                         'docker-compose -f mysql.docker-compose.yml up ' +
                         '--detach'
@@ -193,7 +194,7 @@ pipeline {
                 }
 
                 try {
-                    sh 'docker image rm dein-li/dein-li-backend:' + tag_name + ' -f'
+                    sh 'docker image rm ' + api_image_name + ' -f'
                 } catch (err) {
                     echo err.getMessage()
                 }
