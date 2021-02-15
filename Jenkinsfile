@@ -114,7 +114,7 @@ pipeline {
                     sh 'docker run ' +
                             '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
                             '--name ' + container_newman_name + ' ' +
-                            '-p 3000:3000' +
+                            '-p 3000:3000 ' +
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
