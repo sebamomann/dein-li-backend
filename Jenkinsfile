@@ -1,7 +1,7 @@
 def image
 def branch_name = "${env.BRANCH_NAME}" as String
 def build_number = "${env.BUILD_NUMBER}" as String
-def commit_hash = "${env.GIT_COMMIT}" as String
+def commit_hash
 
 def tag_name = 'jb_' + branch_name + "_" + build_number
 
@@ -16,6 +16,7 @@ pipeline {
 
     environment {
         GITHUB_STATUS_ACCESS_TOKEN_SEBAMOMANN = credentials('GITHUB_STATUS_ACCESS_TOKEN_SEBAMOMANN')
+        commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
     }
 
     options {
