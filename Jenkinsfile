@@ -76,7 +76,7 @@ pipeline {
                             '--env SALT_JWT=salt ' +
                             '--env SALT_MAIL=salt ' +
                             '--env API_URL=' + container_backend_name + ':3000 ' +
-                            '--env DB_USERNAME=root ' +
+                            '--env DB_USERNAME=user ' +
                             '--env DB_PASSWORD=password ' +
                             '--env DB_HOST=' + container_database_name + ' ' +
                             '--env DB_PORT=3306 ' +
