@@ -16,7 +16,6 @@ pipeline {
 
     environment {
         GITHUB_STATUS_ACCESS_TOKEN_SEBAMOMANN = credentials('GITHUB_STATUS_ACCESS_TOKEN_SEBAMOMANN')
-        commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
     }
 
     options {
@@ -29,6 +28,8 @@ pipeline {
                 script {
                     updateStatus("pending")
                 }
+                commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                echo "COMMIT HASH: ${commit_hash}"
             }
         }
 
