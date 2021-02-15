@@ -6022,7 +6022,7 @@
 											"const schema = {\r",
 											"    \"type\": \"array\",\r",
 											"    \"items\": [\r",
-											"   l     JSON.parse(pm.variables.get(\"schema_link\"))\r",
+											"        JSON.parse(pm.variables.get(\"schema_link\"))\r",
 											"    ]\r",
 											"};\r",
 											"\r",
