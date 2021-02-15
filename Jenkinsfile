@@ -1,6 +1,7 @@
 def image
 def branch_name = "${env.BRANCH_NAME}" as String
 def build_number = "${env.BUILD_NUMBER}" as String
+def commit_hash = "${env.GIT_COMMIT}" as String
 
 def tag_name = 'jb_' + branch_name + "_" + build_number
 
@@ -110,7 +111,7 @@ pipeline {
                             '--name ' + container_newman_name + ' ' +
                             '--net ' + network_name + ' ' +
                             '-t postman/newman:alpine ' +
-                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + branch_name + '/test/collection/dein-li-swagger.postman_collection.json" ' +
+                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
                             '-n 1 ' +
                             '--bail'
