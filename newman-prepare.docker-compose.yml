@@ -14,12 +14,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-    command: >
-      sh -c "mysqld --default-authentication-plugin=mysql_native_password &&
-             mysql -uuser -ppassword dein-li-newman < $$(pwd)/test/testdata/data_I_main.sql &&
-             mysql -uuser -ppassword dein-li-newman < $$(pwd)/test/testdata/data_II_calls-get-links.sql &&
-             mysql -uuser -ppassword dein-li-newman < $$(pwd)/test/testdata/data_III_calls-get-statistics.sql &&
-             mysql -uuser -ppassword dein-li-newman < $$(pwd)/test/testdata/data_IV_calls-noise.sql"
+    command: mysqld --default-authentication-plugin=mysql_native_password
     networks:
       - network
   backend:

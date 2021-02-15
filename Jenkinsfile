@@ -59,7 +59,7 @@ pipeline {
                         'API_IMAGE_NAME=' + api_image_name + ' ' +
                         'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
                         'NETWORK_NAME=' + network_name + ' ' +
-                        'docker-compose -f mysql.docker-compose.yml up ' +
+                        'docker-compose -f newman-prepare.docker-compose.yml up ' +
                         '--detach'
 //                            '' +
 //                            '' +
@@ -100,17 +100,17 @@ pipeline {
 //                            '--health-interval=2s ' +
 //                            'dein-li/dein-li-backend:' + tag_name
 //
-//                    timeout(5) {
-//                        waitUntil {
-//                            "healthy" == sh(returnStdout: true,
-//                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
-//                        }
-//                    }
-//
-//                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
-//                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
-//                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_III_calls-get-statistics.sql'
-//                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_IV_calls-noise.sql'
+                    timeout(5) {
+                        waitUntil {
+                            "healthy" == sh(returnStdout: true,
+                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
+                        }
+                    }
+
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_III_calls-get-statistics.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_IV_calls-noise.sql'
                 }
             }
         }
@@ -118,6 +118,12 @@ pipeline {
         stage('Newman exec') {
             steps {
                 script {
+                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+                        'COMMIT_HASH=' + commit_hash + ' ' +
+                        'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                        'NETWORK_NAME=' + network_name + ' ' +
+                        'docker-compose -f newman-prepare.docker-compose.yml up ' +
+                        '--detach'
 //                    def environmentVars = readFile file: "/var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment"
 //                    environmentVars = environmentVars.replaceAll("{{baseUrl}}", container_backend_name)
 //                    writeFile file: "./dein-li-newman.postman_environment", text: environmentVars
@@ -127,19 +133,19 @@ pipeline {
 //                            '-p 3000:3000 ' +
 //                            '--net ' + network_name + ' ' +
 //                            '-t postman/newman:alpine ' +
-                    timeout(60) {
-                        waitUntil {
-                            "healthy" == sh(returnStdout: true,
-                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Running }}\"").trim()
-                        }
-                    }
-
-                    sh 'docker exec -i ' + container_newman_name + ' ' +
-                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
-                                '--environment="environment.json.postman_environment" ' +
-                                '--env-var baseUrl=' + container_backend_name + ':3000 ' +
-                                '-n 1 ' +
-                                '--bail'
+//                    timeout(60) {
+//                        waitUntil {
+//                            "healthy" == sh(returnStdout: true,
+//                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Running }}\"").trim()
+//                        }
+//                    }
+//
+//                    sh 'docker exec -i ' + container_newman_name + ' ' +
+//                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
+//                                '--environment="environment.json.postman_environment" ' +
+//                                '--env-var baseUrl=' + container_backend_name + ':3000 ' +
+//                                '-n 1 ' +
+//                                '--bail'
                 }
             }
         }
