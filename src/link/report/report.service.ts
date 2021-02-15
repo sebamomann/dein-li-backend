@@ -1,9 +1,9 @@
 import {Injectable} from '@nestjs/common';
 import {LinkService} from "../link.service";
 import {Report} from "./report.entity";
-import {User} from "../../user/user.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
+import {User} from "../../user/user.model";
 
 @Injectable()
 export class ReportService {
@@ -18,7 +18,7 @@ export class ReportService {
 
         const report = new Report();
         report.link = link;
-        report.user = user ? user : null;
+        report.userId = user ? user.sub : null;
         report.isConfirmation = false;
 
         return await this.reportRepository.save(report);

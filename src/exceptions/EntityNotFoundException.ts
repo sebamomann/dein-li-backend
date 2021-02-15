@@ -1,7 +1,7 @@
 import {Exception} from "./Exception";
 
 export class EntityNotFoundException extends Exception {
-    constructor(code: string = null, message: string = null, data: string = null) {
+    constructor(code: string = null, message: string = null, data: string | any[] | object = null) {
         super();
 
         if (!code) {

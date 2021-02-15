@@ -1,5 +1,4 @@
-import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {User} from "../user/user.entity";
+import {Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Call} from "./call/call.entity";
 import {Report} from "./report/report.entity";
 
@@ -17,13 +16,8 @@ export class Link {
     @Column({default: true, comment: "1: active, -1: deprecated, -2: locked, -3: deleted"})
     isActive: number;
 
-    @ManyToOne(() => User,
-        user => user.links,
-        {
-            eager: true
-        })
-    @JoinColumn()
-    creator: User;
+    @Column({nullable: true})
+    creatorId: string;
 
     @OneToMany(() => Call,
         call => call.link,

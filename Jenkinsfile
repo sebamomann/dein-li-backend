@@ -1,9 +1,16 @@
 def image
-def branch_name = "${env.BRANCH_NAME}"
-def github_token = "${env.GITHUB_STATUS_ACCESS_TOKEN}"
-def build_number = "${env.BUILD_NUMBER}"
+def branch_name = "${env.BRANCH_NAME}" as String
+def build_number = "${env.BUILD_NUMBER}" as String
+def commit_hash
 
-def tagName = 'jb_' + branch_name + "_" + build_number
+def tag_name = 'jb_' + branch_name + "_" + build_number
+
+def api_image_name = 'dein-li/dein-li-backend:' + tag_name
+def container_database_name = 'dein-li_newman-testing_db_' + tag_name
+def container_newman_name = 'dein-li_newman-testing_newman_' + tag_name
+def container_backend_name = 'dein-li_newman-testing_backend_' + tag_name
+def network_name = 'dein-li_newman-testing_network_' + tag_name
+
 
 pipeline {
     agent any
@@ -20,7 +27,17 @@ pipeline {
         stage('Preamble') {
             steps {
                 script {
+                    echo 'Updating status'
                     updateStatus("pending")
+                }
+                script {
+                    commit_hash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+
+                    echo 'Control Variables'
+                    echo '-------------------'
+                    echo "COMMIT HASH: ${commit_hash}"
+                    echo "BRANCH NAME: ${branch_name}"
+                    echo "BUILD NUMBER: ${build_number}"
                 }
             }
         }
@@ -28,7 +45,60 @@ pipeline {
         stage('Build Docker image') {
             steps {
                 script {
-                    image = docker.build("dein-li/dein-li-backend:" + tagName)
+                    image = docker.build(api_image_name)
+                }
+            }
+        }
+
+        stage('Newman - prepare API') {
+            steps {
+                script {
+                    echo 'Spinup network'
+
+                    try {
+                        sh 'docker network create ' + network_name
+                    } catch (err) {
+                        echo err.getMessage()
+                    }
+                }
+                script {
+                    sh 'MYSQL_CONTAINER_NAME=' + container_database_name + ' ' +
+                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                            'API_IMAGE_NAME=' + api_image_name + ' ' +
+                            'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+                            'NETWORK_NAME=' + network_name + ' ' +
+                            'docker-compose -f newman-prepare.docker-compose.yml up ' +
+                            '--detach'
+
+                    timeout(5) {
+                        waitUntil {
+                            "healthy" == sh(returnStdout: true,
+                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Health.Status }}\"").trim()
+                        }
+                    }
+                }
+            }
+        }
+        stage('Newman - populate database') {
+            steps {
+                script {
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_I_main.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_II_calls-get-links.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_III_calls-get-statistics.sql'
+                    sh 'docker exec -i ' + container_database_name + ' mysql -uuser -ppassword dein-li-newman < $(pwd)/test/testdata/data_IV_calls-noise.sql'
+                }
+            }
+        }
+
+        stage('Newman - execute') {
+            steps {
+                script {
+                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+                            'COMMIT_HASH=' + commit_hash + ' ' +
+                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+                            'NETWORK_NAME=' + network_name + ' ' +
+                            'docker-compose -f newman-execute.docker-compose.yml up ' +
+                            '--detach'
                 }
             }
         }
@@ -68,7 +138,31 @@ pipeline {
         always {
             script {
                 try {
-                    sh 'docker image rm dein-li/dein-li-backend:' + tagName + ' -f'
+                    sh 'docker container rm ' + container_backend_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker container rm ' + container_newman_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker container rm ' + container_database_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker network rm ' + network_name
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker image rm ' + api_image_name + ' -f'
                 } catch (err) {
                     echo err.getMessage()
                 }
@@ -79,7 +173,7 @@ pipeline {
                 updateStatus("success")
 
                 try {
-                    sh 'docker image prune --filter label=stage=intermediate -f'
+                    sh 'docker image prune --filter label=stage=intermediate -f --volumes'
                 } catch (err) {
                     echo err.getMessage()
                 }
@@ -103,7 +197,7 @@ void updateStatus(String value) {
             '  -H "Content-Type: application/json" \\\n' +
             '  -H "Authorization: token $GITHUB_STATUS_ACCESS_TOKEN_SEBAMOMANN" \\\n' +
             '  -X POST \\\n' +
-            '  -d "{\\"state\\": \\"' + value + '\\", \\"description\\": \\"Jenkins\\", \\"context\\": \\"continuous-integration/jenkins\\", \\"target_url\\": \\"https://jenkins.dankoe.de/job/deinli-backend-backend/job/$BRANCH_NAME/$BUILD_NUMBER/console\\"}" \\\n' +
+            '  -d "{\\"state\\": \\"' + value + '\\", \\"description\\": \\"Jenkins\\", \\"context\\": \\"continuous-integration/jenkins\\", \\"target_url\\": \\"https://jenkins.dankoe.de/job/dein-li-backend/job/$BRANCH_NAME/$BUILD_NUMBER/console\\"}" \\\n' +
             '  '
 }
 

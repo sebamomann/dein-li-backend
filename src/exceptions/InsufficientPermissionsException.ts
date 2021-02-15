@@ -5,7 +5,7 @@ export class InsufficientPermissionsException extends Exception {
         super();
 
         if (!code) {
-            this.code = 'FORBIDDEN';
+            this.code = 'INSUFFICIENT_PERMISSIONS';
         } else {
             this.code = code;
         }
