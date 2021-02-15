@@ -21,7 +21,8 @@ services:
     image: ${API_IMAGE_NAME}
     container_name: ${BACKEND_CONTAINER_NAME}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       - SALT_JWT=salt
       - SALT_MAIL=salt
@@ -36,7 +37,7 @@ services:
       - KEYCLOAK_REALM=test
       - KEYCLOAK_CLIENT-ID=test
     healthcheck:
-      test: ["CMD", "curl", "localhost:3000/healthcheck", "||", "exit 1"]
+      test: ["CMD", "curl", "localhost:3000/healthcheck"]
       interval: 10s
       timeout: 5s
       retries: 3
