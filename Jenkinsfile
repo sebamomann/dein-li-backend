@@ -53,7 +53,7 @@ pipeline {
                     }
                 }
                 script {
-                    sh 'CONTAINER_NAME=' + container_database_name + ' NETWORK_NAME=' + network_name + ' docker-compose -f ./mysql.docker-compose.yml up'
+                    sh 'CONTAINER_NAME=' + container_database_name + ' NETWORK_NAME=' + network_name + ' docker-compose -f ./mysql.docker-compose.yml up --detach'
 //                            '' +
 //                            '' +
 //                            ' run -d ' +
