@@ -118,7 +118,7 @@ pipeline {
         stage('Newman exec') {
             steps {
                 script {
-                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' \\' +
                         'COMMIT_HASH=' + commit_hash + ' ' +
                         'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                         'NETWORK_NAME=' + network_name + ' ' +
