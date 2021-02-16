@@ -97,7 +97,7 @@ pipeline {
                             'COMMIT_HASH=' + commit_hash + ' ' +
                             'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                             'NETWORK_NAME=' + network_name + ' ' +
-                            'docker-compose -f newman-execute.docker-compose.yml up' +
+                            'docker-compose -f newman-execute.docker-compose.yml up'
                 }
             }
         }
