@@ -21,7 +21,7 @@ export class AppController {
         if (!short) {
             res.set('location', process.env.DOMAIN + "?success=true&type=default");
         } else if (short.endsWith("~")) {
-            const url = process.env.DOMAIN + "/link?l=" + short.substr(0, short.length - 1) + "&type=preview";
+            const url = process.env.DOMAIN + "link?l=" + short.substr(0, short.length - 1) + "&type=preview";
             res.set('location', url);
         } else {
             try {
@@ -29,20 +29,20 @@ export class AppController {
 
                 if (link.isActive === 1) {
                     if (link.reports?.length > 0) {
-                        res.set('location', process.env.DOMAIN + "/redirect?success=false&error=threat&short=" + short);
+                        res.set('location', process.env.DOMAIN + "redirect?success=false&error=threat&short=" + short);
                     } else {
                         this.callService.manageLinkCall(link, 1, req.headers['user-agent']);
                         res.set('location', link.original);
                     }
                 } else if (link.isActive === -2) {
                     this.callService.manageLinkCall(link, -2, req.headers['user-agent']);
-                    res.set('location', process.env.DOMAIN + "/redirect?success=false&error=locked");
+                    res.set('location', process.env.DOMAIN + "redirect?success=false&error=locked");
                 } else {
                     this.callService.manageLinkCall(link, null, req.headers['user-agent']);
-                    res.set('location', process.env.DOMAIN + "/redirect?success=false&error=unknown");
+                    res.set('location', process.env.DOMAIN + "redirect?success=false&error=unknown");
                 }
             } catch (e) {
-                res.set('location', process.env.DOMAIN + "/redirect?success=false&error=not_found");
+                res.set('location', process.env.DOMAIN + "redirect?success=false&error=not_found");
             }
         }
 

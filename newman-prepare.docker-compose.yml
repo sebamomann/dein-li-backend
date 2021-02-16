@@ -35,10 +35,10 @@ services:
       - TYPEORM_SYNCHRONIZE=true
       - TYPEORM_ENTITIES=dist/**/*.entity.js
       - NODE_ENV=newman
-      - API_URL=${BACKEND_CONTAINER_NAME}:3000
-      - KEYCLOAK_URL=https://account.sebamomann.de
+      - API_URL=${BACKEND_CONTAINER_NAME}:3000/
+      - KEYCLOAK_URL=https://account.sebamomann.de/
       - KEYCLOAK_REALM=test
-      - KEYCLOAK_CLIENT-ID=test
+      - KEYCLOAK_CLIENT_ID=test
     healthcheck:
       test: ["CMD", "curl", "localhost:3000/healthcheck"]
       interval: 10s

@@ -56,7 +56,7 @@ export class LinkController {
         return this.linkService
             .create(link, user)
             .then(tLink => {
-                res.header("Location", `${process.env.API_URL}/links/${tLink.short}`)
+                res.header("Location", `${process.env.API_URL}links/${tLink.short}`)
                 res.status(HttpStatus.CREATED).json(tLink);
             })
             .catch((err) => {

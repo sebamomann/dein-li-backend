@@ -9,7 +9,7 @@ export class AuthGuard implements CanActivate {
     ): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
-        const url = `${process.env.KEYCLOAK_URL}/auth/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`;
+        const url = `${process.env.KEYCLOAK_URL}auth/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`;
 
         try {
             const response = await this.httpService.get<any>(url, {
