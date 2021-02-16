@@ -1,6 +1,6 @@
 import {
-    BadRequestException,
-    CallHandler, ConflictException,
+    CallHandler,
+    ConflictException,
     ExecutionContext,
     ForbiddenException,
     Injectable,

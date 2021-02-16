@@ -1,7 +1,7 @@
 var bcrypt = require('bcryptjs');
 
 export class PasswordUtil {
-    public static cryptPassword = function(password) {
+    public static cryptPassword = function (password) {
         return bcrypt.hashSync(password, 10);
     };
 

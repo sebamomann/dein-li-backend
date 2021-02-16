@@ -4,6 +4,7 @@ import {CanActivate, ExecutionContext, HttpService, Injectable, UnauthorizedExce
 export class AuthGuard implements CanActivate {
     constructor(private httpService: HttpService) {
     }
+
     async canActivate(
         context: ExecutionContext,
     ): Promise<boolean> {
