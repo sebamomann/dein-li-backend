@@ -32,7 +32,7 @@ services:
       - TYPEORM_USERNAME=user
       - TYPEORM_PASSWORD=password
       - TYPEORM_DATABASE=dein-li-newman
-      - TYPEORM_SYNCHRONIZE=false
+      - TYPEORM_SYNCHRONIZE=true
       - TYPEORM_ENTITIES=dist/**/*.entity.js
       - NODE_ENV=newman
       - API_URL=${BACKEND_CONTAINER_NAME}:3000
