@@ -26,13 +26,16 @@ services:
     environment:
       - SALT_JWT=salt
       - SALT_MAIL=salt
-      - API_URL=${BACKEND_CONTAINER_NAME}:3000
-      - DB_USERNAME=user
-      - DB_PASSWORD=password
-      - DB_HOST=${MYSQL_CONTAINER_NAME}
-      - DB_PORT=3306
-      - DB_DATABASE=dein-li-newman
+      - TYPEORM_CONNECTION=mysql
+      - TYPEORM_HOST=${MYSQL_CONTAINER_NAME}
+      - TYPEORM_PORT=3306
+      - TYPEORM_USERNAME=user
+      - TYPEORM_PASSWORD=password
+      - TYPEORM_DATABASE=dein-li-newman
+      - TYPEORM_SYNCHRONIZE=false
+      - TYPEORM_ENTITIES=dist/**/*.entity.js
       - NODE_ENV=newman
+      - API_URL=${BACKEND_CONTAINER_NAME}:3000
       - KEYCLOAK_URL=https://account.sebamomann.de
       - KEYCLOAK_REALM=test
       - KEYCLOAK_CLIENT-ID=test
