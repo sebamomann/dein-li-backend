@@ -16,7 +16,7 @@ export class Link {
     @Column({default: true, comment: "1: active, -1: deprecated, -2: locked, -3: deleted"})
     isActive: number;
 
-    @Column({nullable: true})
+    @Column({nullable: true, type: "uuid"})
     creatorId: string;
 
     @OneToMany(() => Call,

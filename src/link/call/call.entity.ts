@@ -14,7 +14,7 @@ export class Call {
     @JoinColumn()
     link: Link;
 
-    @Column({nullable: true})
+    @Column({nullable: false, default: 1})
     status: number;
 
     @Column()

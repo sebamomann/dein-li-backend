@@ -14,6 +14,7 @@ export class Report {
     @JoinColumn()
     link: Link;
 
+    @Column({nullable: false, type: "uuid"})
     userId: string;
 
     @Column('smallint', {default: false})
