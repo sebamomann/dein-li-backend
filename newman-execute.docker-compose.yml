@@ -6,7 +6,7 @@ services:
     volumes:
       - /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment
     command: >
-      sh -c "run \"https://raw.githubusercontent.com/sebamomann/dein-li-backend/${COMMIT_HASH}/test/collection/dein-li-swagger.postman_collection.json\"
+      bash -c "run \"https://raw.githubusercontent.com/sebamomann/dein-li-backend/${COMMIT_HASH}/test/collection/dein-li-swagger.postman_collection.json\"
              --environment=\"environment.json.postman_environment\"
              --env-var baseUrl=${BACKEND_CONTAINER_NAME}:3000
              -n 1
