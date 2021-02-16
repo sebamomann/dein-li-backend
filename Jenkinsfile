@@ -134,50 +134,7 @@ pipeline {
     }
 
     post {
-        always {
-            script {
-                try {
-                    sh 'docker container rm ' + container_backend_name + ' -f'
-                } catch (err) {
-                    echo err.getMessage()
-                }
 
-                try {
-                    sh 'docker container rm ' + container_newman_name + ' -f'
-                } catch (err) {
-                    echo err.getMessage()
-                }
-
-                try {
-                    sh 'docker container rm ' + container_database_name + ' -f'
-                } catch (err) {
-                    echo err.getMessage()
-                }
-
-                try {
-                    sh 'docker network rm ' + network_name
-                } catch (err) {
-                    echo err.getMessage()
-                }
-
-                try {
-                    sh 'docker image rm ' + api_image_name + ' -f'
-                } catch (err) {
-                    echo err.getMessage()
-                }
-            }
-        }
-        success {
-            script {
-                updateStatus("success")
-
-                try {
-                    sh 'docker image prune --filter label=stage=intermediate -f --volumes'
-                } catch (err) {
-                    echo err.getMessage()
-                }
-            }
-        }
         failure {
             script {
                 updateStatus("failure")
