@@ -94,26 +94,37 @@ pipeline {
         stage('Newman - execute') {
             steps {
                 script {
-                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
-                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
-                            'NETWORK_NAME=' + network_name + ' ' +
-                            'docker-compose -f newman-execute.docker-compose.yml up ' +
-                            '--detach'
-
-                    timeout(5) {
-                        waitUntil {
-                            "true" == sh(returnStdout: true,
-                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Running }}\"").trim()
-                        }
-                    }
-
-                    // running extra needed, otherwise pipeline will not fail on failed test
-                    sh 'docker exec -i ' + container_newman_name + ' ' +
-                            'run \"https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json\" ' +
-                            '--environment=\"environment.json.postman_environment\" ' +
+                    sh 'docker run ' +
+                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
+                            '--name ' + container_newman_name + ' ' +
+                            '-p 3000:3000 ' +
+                            '--net ' + network_name + ' ' +
+                            '-t postman/newman:alpine ' +
+                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
+                            '--environment="environment.json.postman_environment" ' +
                             '--env-var baseUrl=' + container_backend_name + ':3000 ' +
                             '-n 1 ' +
                             '--bail'
+//                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+//                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+//                            'NETWORK_NAME=' + network_name + ' ' +
+//                            'docker-compose -f newman-execute.docker-compose.yml up ' +
+//                            '--detach'
+//
+//                    timeout(5) {
+//                        waitUntil {
+//                            "true" == sh(returnStdout: true,
+//                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Running }}\"").trim()
+//                        }
+//                    }
+//
+//                    // running extra needed, otherwise pipeline will not fail on failed test
+//                    sh 'docker exec -i ' + container_newman_name + ' ' +
+//                            'run \"https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json\" ' +
+//                            '--environment=\"environment.json.postman_environment\" ' +
+//                            '--env-var baseUrl=' + container_backend_name + ':3000 ' +
+//                            '-n 1 ' +
+//                            '--bail'
                 }
             }
         }
