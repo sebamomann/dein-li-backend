@@ -100,6 +100,14 @@ pipeline {
                             'docker-compose -f newman-execute.docker-compose.yml up ' +
                             '--detach'
 
+                    timeout(5) {
+                        waitUntil {
+                            "true" == sh(returnStdout: true,
+                                    script: "docker inspect " + container_backend_name + " --format=\"{{ .State.Running }}\"").trim()
+                        }
+                    }
+
+                    // running extra needed, otherwise pipeline will not fail on failed test
                     sh 'docker exec -i ' + container_newman_name + ' ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
