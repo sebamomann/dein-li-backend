@@ -46,15 +46,6 @@ services:
       retries: 3
     networks:
       - network
-  newman:
-    image: postman/newman:alpine
-    container_name: ${NEWMAN_CONTAINER_NAME}
-    depends_on:
-      backend:
-        condition: service_healthy
-    volumes:
-      - /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment
-
 networks:
   network:
     name: ${NETWORK_NAME}
