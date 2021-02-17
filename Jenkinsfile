@@ -96,7 +96,8 @@ pipeline {
                     sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
                             'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                             'NETWORK_NAME=' + network_name + ' ' +
-                            'docker-compose -f newman-execute.docker-compose.yml up'
+                            'docker-compose -f newman-execute.docker-compose.yml up ' +
+                            '--detach'
 
                     sh 'docker exec -i ' + container_newman_name + ' ' +
                             'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
