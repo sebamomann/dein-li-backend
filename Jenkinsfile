@@ -99,8 +99,15 @@ pipeline {
                             'docker-compose -f newman-execute.docker-compose.yml up ' +
                             '--detach'
 
+                    timeout(5) {
+                        waitUntil {
+                            "healthy" == sh(returnStdout: true,
+                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Running }}\"").trim()
+                        }
+                    }
+
                     sh 'docker exec -i ' + container_newman_name + ' ' +
-                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
+                            'newman run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
                             '--environment="environment.json.postman_environment" ' +
                             '--env-var baseUrl=' + container_backend_name + ':3000 ' +
                             '-n 1 ' +
