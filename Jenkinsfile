@@ -109,8 +109,8 @@ pipeline {
 
                     // running extra needed, otherwise pipeline will not fail on failed test
                     sh 'docker exec -i ' + container_newman_name + ' ' +
-                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
-                            '--environment="environment.json.postman_environment" ' +
+                            'run \"https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json\" ' +
+                            '--environment=\"environment.json.postman_environment\" ' +
                             '--env-var baseUrl=' + container_backend_name + ':3000 ' +
                             '-n 1 ' +
                             '--bail'
