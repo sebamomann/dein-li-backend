@@ -79,6 +79,7 @@ pipeline {
                 }
             }
         }
+        //Needs to be in extra step, because the backend is creating the DB Schema
         stage('Newman - populate database') {
             steps {
                 script {
@@ -98,13 +99,6 @@ pipeline {
                             'NETWORK_NAME=' + network_name + ' ' +
                             'docker-compose -f newman-execute.docker-compose.yml up ' +
                             '--detach'
-
-                    timeout(5) {
-                        waitUntil {
-                            "healthy" == sh(returnStdout: true,
-                                    script: "docker inspect " + container_newman_name + " --format=\"{{ .State.Running }}\"").trim()
-                        }
-                    }
 
                     sh 'docker exec -i ' + container_newman_name + ' ' +
                             'newman run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
@@ -151,19 +145,19 @@ pipeline {
         always {
             script {
                 try {
-                    sh 'docker container rm ' + container_backend_name + ' -f'
+                    sh 'docker container rm ' + container_backend_name + ' -f -v'
                 } catch (err) {
                     echo err.getMessage()
                 }
 
                 try {
-                    sh 'docker container rm ' + container_newman_name + ' -f'
+                    sh 'docker container rm ' + container_newman_name + ' -f -v'
                 } catch (err) {
                     echo err.getMessage()
                 }
 
                 try {
-                    sh 'docker container rm ' + container_database_name + ' -f'
+                    sh 'docker container rm ' + container_database_name + ' -f -v'
                 } catch (err) {
                     echo err.getMessage()
                 }
