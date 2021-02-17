@@ -94,10 +94,16 @@ pipeline {
             steps {
                 script {
                     sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
-                            'COMMIT_HASH=' + commit_hash + ' ' +
                             'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
                             'NETWORK_NAME=' + network_name + ' ' +
                             'docker-compose -f newman-execute.docker-compose.yml up'
+
+                    sh 'docker exec -i ' + container_newman_name + ' ' +
+                            'run "https://raw.githubusercontent.com/sebamomann/dein-li-backend/' + commit_hash + '/test/collection/dein-li-swagger.postman_collection.json" ' +
+                            '--environment="environment.json.postman_environment" ' +
+                            '--env-var baseUrl=' + container_backend_name + ':3000 ' +
+                            '-n 1 ' +
+                            '--bail'
                 }
             }
         }
@@ -134,7 +140,50 @@ pipeline {
     }
 
     post {
+        always {
+            script {
+                try {
+                    sh 'docker container rm ' + container_backend_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
 
+                try {
+                    sh 'docker container rm ' + container_newman_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker container rm ' + container_database_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker network rm ' + network_name
+                } catch (err) {
+                    echo err.getMessage()
+                }
+
+                try {
+                    sh 'docker image rm ' + api_image_name + ' -f'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+            }
+        }
+        success {
+            script {
+                updateStatus("success")
+
+                try {
+                    sh 'docker image prune --filter label=stage=intermediate -f --volumes'
+                } catch (err) {
+                    echo err.getMessage()
+                }
+            }
+        }
         failure {
             script {
                 updateStatus("failure")
