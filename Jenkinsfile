@@ -93,11 +93,11 @@ pipeline {
         stage('Newman - execute') {
             steps {
                 script {
-                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
-                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
-                            'NETWORK_NAME=' + network_name + ' ' +
-                            'docker-compose -f newman-execute.docker-compose.yml up ' +
-                            '--detach'
+//                    sh 'NEWMAN_CONTAINER_NAME=' + container_newman_name + ' ' +
+//                            'BACKEND_CONTAINER_NAME=' + container_backend_name + ' ' +
+//                            'NETWORK_NAME=' + network_name + ' ' +
+//                            'docker-compose -f newman-execute.docker-compose.yml up ' +
+//                            '--detach'
 
                     timeout(5) {
                         waitUntil {
