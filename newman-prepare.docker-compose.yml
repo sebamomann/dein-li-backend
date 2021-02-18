@@ -39,6 +39,7 @@ services:
       - KEYCLOAK_URL=https://account.sebamomann.de/
       - KEYCLOAK_REALM=test
       - KEYCLOAK_CLIENT_ID=test
+      - TZ=Europe/Berlin
     healthcheck:
       test: ["CMD", "curl", "localhost:3000/healthcheck"]
       interval: 10s
