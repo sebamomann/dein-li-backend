@@ -12,7 +12,6 @@ import * as path from 'path';
 import {ReportModule} from "./modules/link/report/report.module";
 import {GlobalModule} from './modules/global/global.module';
 import {AuthModule} from "./auth/auth.module";
-import {Connection} from "typeorm";
 
 require('dotenv').config();
 
@@ -29,7 +28,7 @@ const _mail = process.env.MAIL_DEINLI;
             },
             template: {
                 dir: path.resolve(__dirname, 'templates'),
-                adapter: new HandlebarsAdapter(), // or new PugAdapter()
+                adapter: new HandlebarsAdapter(),
                 options: {
                     strict: true,
                 },
@@ -46,6 +45,6 @@ const _mail = process.env.MAIL_DEINLI;
     providers: [AppService],
 })
 export class AppModule {
-    constructor(private connection: Connection) {
+    constructor() {
     }
 }
