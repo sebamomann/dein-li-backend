@@ -1,15 +1,15 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {Link} from "./link.entity";
-import {User} from "../user/user.model";
-import {InvalidAttributesException} from "../exceptions/InvalidAttributesException";
+import {User} from "../../user/user.model";
+import {InvalidAttributesException} from "../../exceptions/InvalidAttributesException";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 
-import {AlreadyUsedException} from "../exceptions/AlreadyUsedException";
-import {EntityNotFoundException} from "../exceptions/EntityNotFoundException";
-import {InsufficientPermissionsException} from "../exceptions/InsufficientPermissionsException";
+import {AlreadyUsedException} from "../../exceptions/AlreadyUsedException";
+import {EntityNotFoundException} from "../../exceptions/EntityNotFoundException";
+import {InsufficientPermissionsException} from "../../exceptions/InsufficientPermissionsException";
 import {CallService} from "./call/call.service";
-import {ForbiddenAttributesException} from "../exceptions/ForbiddenAttributesException";
+import {ForbiddenAttributesException} from "../../exceptions/ForbiddenAttributesException";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const validUrl = require("valid-url");

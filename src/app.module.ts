@@ -4,13 +4,13 @@ import {AppService} from './app.service';
 
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {UserModule} from "./user/user.module";
-import {LinkModule} from "./link/link.module";
-import {CallModule} from "./link/call/call.module";
+import {LinkModule} from "./modules/link/link.module";
+import {CallModule} from "./modules/link/call/call.module";
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import * as path from 'path';
-import {ReportModule} from "./link/report/report.module";
-import {GlobalModule} from './global/global.module';
+import {ReportModule} from "./modules/link/report/report.module";
+import {GlobalModule} from './modules/global/global.module';
 import {AuthModule} from "./auth/auth.module";
 import {Connection} from "typeorm";
 

@@ -12,16 +12,16 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 
-import {Usr} from '../user/user.decorator';
-import {User} from "../user/user.model";
+import {Usr} from '../../user/user.decorator';
+import {User} from "../../user/user.model";
 
 import {Link} from "./link.entity";
 import {LinkService} from "./link.service";
 
 import {Response} from 'express';
-import {BusinessToHttpExceptionInterceptor} from "../interceptor/BusinessToHttpException.interceptor";
-import {AuthGuard} from "../auth/auth.gurad";
-import {AuthOptGuard} from "../auth/auth-opt.gurad";
+import {BusinessToHttpExceptionInterceptor} from "../../interceptor/BusinessToHttpException.interceptor";
+import {AuthGuard} from "../../auth/auth.gurad";
+import {AuthOptGuard} from "../../auth/auth-opt.gurad";
 
 @Controller('links')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)

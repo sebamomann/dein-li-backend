@@ -1,6 +1,6 @@
 import {Controller, Get, HttpStatus, Param, Request, Res} from '@nestjs/common';
-import {LinkService} from "./link/link.service";
-import {CallService} from "./link/call/call.service";
+import {LinkService} from "./modules/link/link.service";
+import {CallService} from "./modules/link/call/call.service";
 
 @Controller()
 export class AppController {

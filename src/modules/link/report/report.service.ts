@@ -3,7 +3,7 @@ import {LinkService} from "../link.service";
 import {Report} from "./report.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
-import {User} from "../../user/user.model";
+import {User} from "../../../user/user.model";
 
 @Injectable()
 export class ReportService {

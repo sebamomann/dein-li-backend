@@ -1,7 +1,7 @@
 import {Controller, Get, HttpStatus, Param, Query, Res, UseGuards} from '@nestjs/common';
-import {AuthOptGuard} from "../../auth/auth-opt.gurad";
-import {Usr} from "../../user/user.decorator";
-import {User} from "../../user/user.model";
+import {AuthOptGuard} from "../../../auth/auth-opt.gurad";
+import {Usr} from "../../../user/user.decorator";
+import {User} from "../../../user/user.model";
 import {Response} from "express";
 import {LinkService} from "../../link/link.service";
 

@@ -1,9 +1,9 @@
 import {Body, Controller, HttpStatus, Post, Res, UseInterceptors} from '@nestjs/common';
-import {Usr} from "../../user/user.decorator";
+import {Usr} from "../../../user/user.decorator";
 import {Response} from "express";
 import {ReportService} from "./report.service";
-import {BusinessToHttpExceptionInterceptor} from "../../interceptor/BusinessToHttpException.interceptor";
-import {User} from "../../user/user.model";
+import {BusinessToHttpExceptionInterceptor} from "../../../interceptor/BusinessToHttpException.interceptor";
+import {User} from "../../../user/user.model";
 
 @Controller('report')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)
