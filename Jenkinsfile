@@ -95,7 +95,7 @@ pipeline {
             steps {
                 script {
                     sh 'docker run ' +
-                            '-v /var/www/vhosts/sebamomann.dankoe.de/testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' +
+                            '-v /var/www/vhosts/sebamomann.dankoe.de/additional_testing.dein.li/dein-li-newman.postman_environment:/etc/newman/environment.json.postman_environment ' + // TODO volume?
                             '--name ' + container_newman_name + ' ' +
                             '-p 3000:3000 ' +
                             '--net ' + network_name + ' ' +
