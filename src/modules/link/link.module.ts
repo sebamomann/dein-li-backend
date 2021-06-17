@@ -6,9 +6,10 @@ import {LinkController} from "./link.controller";
 import {UserModule} from "../../user/user.module";
 import {CallModule} from "./call/call.module";
 import {AuthModule} from "../../auth/auth.module";
+import {LinkPermission} from './link-permission.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Link]), UserModule, CallModule, AuthModule, HttpModule],
+    imports: [TypeOrmModule.forFeature([Link, LinkPermission]), UserModule, CallModule, AuthModule, HttpModule],
     providers: [LinkService],
     exports: [LinkService],
     controllers: [LinkController],

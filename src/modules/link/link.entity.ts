@@ -1,6 +1,7 @@
 import {Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Call} from "./call/call.entity";
 import {Report} from "./report/report.entity";
+import {LinkPermission} from './link-permission.entity';
 
 @Entity()
 export class Link {
@@ -38,4 +39,12 @@ export class Link {
     iat: Date;
 
     nrOfCalls: number;
+
+    @OneToMany(() => Call,
+        call => call.link,
+        {
+            eager: false
+        })
+    @JoinColumn()
+    permissions: LinkPermission[];
 }
