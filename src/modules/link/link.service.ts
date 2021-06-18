@@ -28,7 +28,7 @@ export class LinkService {
 		@InjectRepository(Link)
 		private readonly linkRepository: Repository<Link>,
 		@InjectRepository(LinkPermission)
-		private readonly linkPermissionRepo: Repository<Link>,
+		private readonly linkPermissionRepo: Repository<LinkPermission>,
 		private callService: CallService,
 	) {
 	}
@@ -261,6 +261,28 @@ export class LinkService {
 		                 .execute();
 	}
 
+	public async deleteLinkPermission(short: string, token: string, user: User) {
+		const _link = await this.getLinkByShort(short);
+
+		if (_link.creatorId !== user.sub) {
+			throw new InsufficientPermissionsException(null,
+				null, [
+					{
+						'attribute': 'short',
+						'value': short,
+						'message': 'Specified link is not in your ownership',
+					},
+				]);
+		}
+
+		const affected = (await this.linkPermissionRepo.delete({token})).affected;
+
+		if (affected === 0) {
+			throw new EntityNotFoundException(null, null, 'permission');
+		}
+
+	}
+
 	private async getLinkStatsByShort(short: string, user: User, interval: 'minutes' | 'hours' | 'days' | 'months', start: string, end: string) {
 		const link = await this.getLinkByShort(short);
 
@@ -404,16 +426,14 @@ export class LinkService {
 		                     .limit(limit ? limit : null)
 		                     .offset(offset ? offset : 0);
 
-		const res = await this.linkRepository
-		                      .createQueryBuilder('link')
-		                      .select('link.*, sub.nrOfCalls')
-		                      .innerJoin('(' + subQuery.getQuery() + ')', 'sub', 'link.short = sub.short')
-		                      .where('link.isActive = :isActive', {isActive: 1})
-		                      .orderBy('sub.nrOfCalls', order)
-		                      .addOrderBy('link.iat', 'DESC')
-		                      .getRawMany();
-
-		return res;
+		return await this.linkRepository
+		                 .createQueryBuilder('link')
+		                 .select('link.*, sub.nrOfCalls')
+		                 .innerJoin('(' + subQuery.getQuery() + ')', 'sub', 'link.short = sub.short')
+		                 .where('link.isActive = :isActive', {isActive: 1})
+		                 .orderBy('sub.nrOfCalls', order)
+		                 .addOrderBy('link.iat', 'DESC')
+		                 .getRawMany();
 	}
 
 	private async permissionExists(token: string) {

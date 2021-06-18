@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Headers,
 	HttpStatus,
@@ -153,6 +154,22 @@ export class LinkController {
 	                     @Res() res: Response) {
 		return this.linkService
 		           .createLinkPermission(short, user)
+		           .then(tLink => {
+			           res.status(HttpStatus.OK).json(tLink);
+		           })
+		           .catch((err) => {
+			           throw err;
+		           });
+	}
+
+	@Delete(':short/permissions/:permission') // TODO SWAGGER ...
+	@UseGuards(AuthGuard)
+	deleteLinkPermission(@Usr() user: User,
+	                     @Param('short') short: string,
+	                     @Param('permission') permission: string,
+	                     @Res() res: Response) {
+		return this.linkService
+		           .deleteLinkPermission(short, permission, user)
 		           .then(tLink => {
 			           res.status(HttpStatus.OK).json(tLink);
 		           })
