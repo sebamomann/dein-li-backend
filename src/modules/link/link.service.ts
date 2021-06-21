@@ -325,7 +325,8 @@ export class LinkService {
 		                     .leftJoin('call', 'call', 'call.linkId = link.id')
 		                     .where('link.creatorId = \'' + user.sub + '\'') // okay bcs it comes from jwt
 		                     .orderBy('nrOfCalls', order)
-		                     .addOrderBy('link.iat', 'DESC')
+		                     .addOrderBy('link.iat', order)
+		                     .addOrderBy('link.short', order)
 		                     .groupBy('short')
 		                     .limit(limit ? limit : null)
 		                     .offset(offset ? offset : 0);
@@ -359,7 +360,7 @@ export class LinkService {
 		                 .innerJoin('(' + subQuery.getQuery() + ')', 'sub', 'link.short = sub.short')
 		                 .where('link.isActive = :isActive', {isActive: 1})
 		                 .orderBy('sub.nrOfCalls', order)
-		                 .addOrderBy('link.iat', 'DESC')
+		                 .addOrderBy('link.iat', order)
 		                 .getRawMany();
 	}
 }
