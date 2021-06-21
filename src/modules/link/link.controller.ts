@@ -23,6 +23,7 @@ import {Response} from 'express';
 import {BusinessToHttpExceptionInterceptor} from '../../interceptor/BusinessToHttpException.interceptor';
 import {AuthGuard} from '../../auth/auth.gurad';
 import {AuthOptGuard} from '../../auth/auth-opt.gurad';
+import {EntityNotFoundException} from '../../exceptions/EntityNotFoundException';
 
 @Controller('links')
 @UseInterceptors(BusinessToHttpExceptionInterceptor)
@@ -75,6 +76,16 @@ export class LinkController {
 			           res.status(HttpStatus.OK).json(tLink);
 		           })
 		           .catch((err) => {
+			           if (err instanceof EntityNotFoundException) {
+				           if (err.data === 'link') {
+					           throw new EntityNotFoundException(null, null, {
+						           'attribute': 'short',
+						           'in': 'path',
+						           'value': short,
+					           });
+				           }
+			           }
+
 			           throw err;
 		           });
 	}
@@ -88,12 +99,26 @@ export class LinkController {
 	           @Res() res: Response) {
 		return this.linkService
 		           .newVersion(link, short, user, token)
-		           .then(() => {
-			           res.status(HttpStatus.NO_CONTENT).send();
-		           })
-		           .catch((err) => {
-			           throw err;
-		           });
+		           .then(
+			           () => {
+				           res.status(HttpStatus.NO_CONTENT).send();
+			           },
+		           )
+		           .catch(
+			           (err) => {
+				           if (err instanceof EntityNotFoundException) {
+					           if (err.data === 'link') {
+						           throw new EntityNotFoundException(null, null, {
+							           'attribute': 'short',
+							           'in': 'path',
+							           'value': short,
+						           });
+					           }
+				           }
+
+				           throw err;
+			           },
+		           );
 	}
 
 	@Get(':short/versions')
@@ -107,9 +132,21 @@ export class LinkController {
 		           .then(tLink => {
 			           res.status(HttpStatus.OK).json(tLink);
 		           })
-		           .catch((err) => {
-			           throw err;
-		           });
+		           .catch(
+			           (err) => {
+				           if (err instanceof EntityNotFoundException) {
+					           if (err.data === 'link') {
+						           throw new EntityNotFoundException(null, null, {
+							           'attribute': 'short',
+							           'in': 'path',
+							           'value': short,
+						           });
+					           }
+				           }
+
+				           throw err;
+			           },
+		           );
 	}
 
 	@Get(':short/statistics')
@@ -125,8 +162,20 @@ export class LinkController {
 		           .then(tLink => {
 			           res.status(HttpStatus.OK).json(tLink);
 		           })
-		           .catch((err) => {
-			           throw err;
-		           });
+		           .catch(
+			           (err) => {
+				           if (err instanceof EntityNotFoundException) {
+					           if (err.data === 'link') {
+						           throw new EntityNotFoundException(null, null, {
+							           'attribute': 'short',
+							           'in': 'path',
+							           'value': short,
+						           });
+					           }
+				           }
+			            
+				           throw err;
+			           },
+		           );
 	}
 }
