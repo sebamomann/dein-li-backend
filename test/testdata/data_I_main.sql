@@ -134,3 +134,75 @@ INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) V
 ('7057c92b-6b76-4849-9c55-d48c999eb251', 'test-noise-10-short', 'https://dein.li', 1, '2020-01-01 00:00:00.000000', NULL);
 COMMIT;
 -- CALLS -> ADDITIONAL SQL FILES
+
+
+
+
+-- #####################
+-- # CREATE PERMISSION #
+-- #####################
+
+-- ---------
+-- DEFAULT -
+-- ---------
+-- User with ID 2b95cb31-109b-4b26-9698-1f43d5ef73dc
+INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) VALUES
+('f65dc645-b269-4a08-9da9-c7161efbe329', 'test-createpermission-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', '2b95cb31-109b-4b26-9698-1f43d5ef73dc');
+COMMIT;
+-- ---------------------
+-- MISSING PERMISSIONS -
+-- ---------------------
+INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) VALUES
+('2b311297-3c94-4cd9-b97e-6eaaf020d80d', 'test-createpermission-missingpermissions-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', NULL);
+COMMIT;
+
+
+
+-- ###################
+-- # GET PERMISSIONS #
+-- ###################
+-- User with ID 2a982e51-2dc9-4b0a-9cdc-a95c36ae63c7
+INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) VALUES
+('33d8cb83-b0fe-41fb-b56d-5e30fb2fb0f3', 'test-getpermissions-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', '2a982e51-2dc9-4b0a-9cdc-a95c36ae63c7'),
+('cc6e566b-41c3-4839-833e-45515fdbaaf8', 'test-getpermissions-missingpermissions-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', NULL);
+COMMIT;
+
+INSERT INTO `link_permission` (`id`, `token`, `iat`, `linkId`, `comment`, `expiration`) VALUES
+('9124656d-1105-44d4-be98-858cd2dcadda', 'zeVnv0mlkBUqiGCNUdFaNrNMKEN758yw', '2021-02-13 19:04:51.000000', '33d8cb83-b0fe-41fb-b56d-5e30fb2fb0f3', 'test-getpermissions-comment-1', '2021-02-13 19:04:51.000000'),
+('40c1d171-e454-4d35-9f96-63ac0b9759fc', 'i0WVRSepWf9NZlvb9TZrYLpjjmSXpd8s', '2021-02-13 19:04:51.000000', '33d8cb83-b0fe-41fb-b56d-5e30fb2fb0f3', 'test-getpermissions-comment-1', '2021-02-13 19:04:51.000000');
+COMMIT;
+
+
+
+-- ##################
+-- # GET PERMISSION #
+-- ##################
+-- User with ID ffe48772-6193-482b-b3cf-09b8dddcfc0a
+INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) VALUES
+('d3f1994d-64a9-4999-b854-b41ea773a0c9', 'test-getpermission-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', 'ffe48772-6193-482b-b3cf-09b8dddcfc0a'),
+('a725dbf7-ff5f-489e-8ce3-637f34bd1e49', 'test-getpermission-missingpermissions-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', NULL);
+COMMIT;
+
+INSERT INTO `link_permission` (`id`, `token`, `iat`, `linkId`, `comment`, `expiration`) VALUES
+('5f2bc8b3-8904-4afc-8d74-eb1175bd85c7', 'tt0OsmVteoz9CnrkyCh8aw7nFLfyZq3T', '2021-02-13 19:04:51.000000', 'd3f1994d-64a9-4999-b854-b41ea773a0c9', 'test-getpermission-comment', '2021-02-13 19:04:51.000000'),
+('8306a4e7-8057-4242-b8ea-66ecedd03d11', 'GeLnSyhqHjRig2lkwmDV4tB6Bur1xyOi', '2021-02-13 19:04:51.000000', 'a725dbf7-ff5f-489e-8ce3-637f34bd1e49', 'test-getpermission-missingpermissions-comment', '2021-02-13 19:04:51.000000');
+COMMIT;
+
+
+
+-- #####################
+-- # DELETE PERMISSION #
+-- #####################
+-- User with ID 12a0a71a-c6d4-4db2-be5f-97630ffe1246
+INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) VALUES
+('2e18c6a9-58cf-4224-ba8e-5b30abb9aa90', 'test-deletepermission-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', '12a0a71a-c6d4-4db2-be5f-97630ffe1246'),
+('b8713cbb-40a4-4fd4-a10c-11ef799cedf3', 'test-deletepermission-missingpermissions-short', 'https://dein.li', 1, '2021-02-13 19:04:51.000000', NULL);
+COMMIT;
+
+INSERT INTO `link_permission` (`id`, `token`, `iat`, `linkId`, `comment`, `expiration`) VALUES
+('c2df69e1-0a52-40cf-83c4-f3f93e2d43eb', 'iRtuJiXmnEvvLuBodK6IDZSJeGTlv6sh', '2021-02-13 19:04:51.000000', 'b8713cbb-40a4-4fd4-a10c-11ef799cedf3', 'test-deletepermission-missingpermissions-comment', '2021-02-13 19:04:51.000000');
+COMMIT;
+
+
+
+

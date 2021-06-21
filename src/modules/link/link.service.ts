@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {forwardRef, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import {Link} from './link.entity';
 import {User} from '../../user/user.model';
 import {InvalidAttributesException} from '../../exceptions/InvalidAttributesException';
@@ -10,8 +10,7 @@ import {EntityNotFoundException} from '../../exceptions/EntityNotFoundException'
 import {InsufficientPermissionsException} from '../../exceptions/InsufficientPermissionsException';
 import {CallService} from './call/call.service';
 import {ForbiddenAttributesException} from '../../exceptions/ForbiddenAttributesException';
-import {GeneratorUtil} from '../../util/generator.util';
-import {LinkPermission} from './link-permission.entity';
+import {PermissionService} from './permission/permission.service';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const validUrl = require('valid-url');
@@ -27,9 +26,9 @@ export class LinkService {
 	constructor(
 		@InjectRepository(Link)
 		private readonly linkRepository: Repository<Link>,
-		@InjectRepository(LinkPermission)
-		private readonly linkPermissionRepo: Repository<LinkPermission>,
 		private callService: CallService,
+		@Inject(forwardRef(() => PermissionService))
+		private permissionService: PermissionService,
 	) {
 	}
 
@@ -107,11 +106,7 @@ export class LinkService {
 		});
 
 		if (link === undefined) {
-			throw new EntityNotFoundException(null, null, {
-				attribute: 'short',
-				in: 'path',
-				value: short,
-			});
+			throw new EntityNotFoundException(null, null, 'link');
 		}
 
 		return link;
@@ -215,74 +210,6 @@ export class LinkService {
 		return val;
 	}
 
-	public async createLinkPermission(short: string, user: User) {
-		const _link = await this.getLinkByShort(short);
-
-		if (_link.creatorId !== user.sub) {
-			throw new InsufficientPermissionsException(null,
-				null, [
-					{
-						'attribute': 'short',
-						'value': short,
-						'message': 'Specified link is not in your ownership',
-					},
-				]);
-		}
-
-		const token = GeneratorUtil.makeid(32);
-		let permission = new LinkPermission();
-		permission.link = _link;
-		permission.token = token;
-
-		permission = await this.linkPermissionRepo.save(permission);
-
-		return permission;
-	}
-
-	public async getLinkPermission(short: string, user: User) {
-		const _link = await this.getLinkByShort(short);
-
-		if (_link.creatorId !== user.sub) {
-			throw new InsufficientPermissionsException(null,
-				null, [
-					{
-						'attribute': 'short',
-						'value': short,
-						'message': 'Specified link is not in your ownership',
-					},
-				]);
-		}
-
-		return await this.linkPermissionRepo.createQueryBuilder('permission')
-		                 .select('permission.*')
-		                 .innerJoin('permission.link', 'link')
-		                 .where('link.short = :short', {short: _link.short})
-		                 .andWhere('link.creatorId <= :creatorId', {creatorId: user.sub})
-		                 .execute();
-	}
-
-	public async deleteLinkPermission(short: string, token: string, user: User) {
-		const _link = await this.getLinkByShort(short);
-
-		if (_link.creatorId !== user.sub) {
-			throw new InsufficientPermissionsException(null,
-				null, [
-					{
-						'attribute': 'short',
-						'value': short,
-						'message': 'Specified link is not in your ownership',
-					},
-				]);
-		}
-
-		const affected = (await this.linkPermissionRepo.delete({token})).affected;
-
-		if (affected === 0) {
-			throw new EntityNotFoundException(null, null, 'permission');
-		}
-
-	}
-
 	private async getLinkStatsByShort(short: string, user: User, interval: 'minutes' | 'hours' | 'days' | 'months', start: string, end: string) {
 		const link = await this.getLinkByShort(short);
 
@@ -340,7 +267,7 @@ export class LinkService {
 		const _link = await this.getLinkByShort(short);
 
 		if (_link.creatorId !== user.sub) {
-			if (!await this.permissionExists(token)) {
+			if (!await this.permissionService.permissionExists(token)) {
 				throw new InsufficientPermissionsException(null,
 					null, [
 						{
@@ -434,9 +361,5 @@ export class LinkService {
 		                 .orderBy('sub.nrOfCalls', order)
 		                 .addOrderBy('link.iat', 'DESC')
 		                 .getRawMany();
-	}
-
-	private async permissionExists(token: string) {
-		return await this.linkPermissionRepo.findOne({where: {token: token}}) !== undefined;
 	}
 }

@@ -12,6 +12,7 @@ import * as path from 'path';
 import {ReportModule} from "./modules/link/report/report.module";
 import {GlobalModule} from './modules/global/global.module';
 import {AuthModule} from "./auth/auth.module";
+import { PermissionModule } from './modules/link/permission/permission.module';
 
 require('dotenv').config();
 
@@ -36,6 +37,7 @@ const _mail = process.env.MAIL_DEINLI;
         }),
         UserModule,
         LinkModule,
+        PermissionModule,
         CallModule,
         ReportModule,
         GlobalModule,

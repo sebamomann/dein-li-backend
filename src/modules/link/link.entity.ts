@@ -1,7 +1,7 @@
 import {Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Call} from "./call/call.entity";
 import {Report} from "./report/report.entity";
-import {LinkPermission} from './link-permission.entity';
+import {LinkPermission} from './permission/link-permission.entity';
 
 @Entity()
 export class Link {

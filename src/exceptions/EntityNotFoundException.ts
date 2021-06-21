@@ -11,7 +11,7 @@ export class EntityNotFoundException extends Exception {
         }
 
         if (!message) {
-            this.message = 'Requested resource could not be located';
+            this.message = 'Provided identifier can\'t locate entity';
         } else {
             this.message = message;
         }
