@@ -57,6 +57,19 @@ INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) V
 ('0b29ed38-cab7-48db-920c-c7166cfd2a8f', 'test-createversion-missingpermissions-short', 'https://dein.li', 1, '2021-02-13 19:23:22.000000', NULL);
 COMMIT;
 
+-- ----------------
+-- BY PERMISSIONS -
+-- ----------------
+INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) VALUES
+('ddd71257-2dc0-493c-a09a-8ed260cbcd87', 'test-createversion-bypermission-short', 'https://dein.li', 1, '2021-02-13 19:23:22.000000', NULL);
+COMMIT;
+
+INSERT INTO `link_permission` (`id`, `token`, `iat`, `linkId`, `comment`, `expiration`) VALUES
+('d99174ae-26bb-40e3-83f3-0ac1eeaa331f', 'sFmk9Jevui6h8GsGcNBwJXKOSZlceuhx', '2021-02-13 19:04:51.000000', 'ddd71257-2dc0-493c-a09a-8ed260cbcd87', 'test-createversion-bypermission-comment', '2021-02-13 19:04:51.000000');
+COMMIT;
+
+
+
 
 
 

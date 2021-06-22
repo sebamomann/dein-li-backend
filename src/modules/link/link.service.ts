@@ -82,7 +82,7 @@ export class LinkService {
 				]);
 		}
 
-		const existingVersion = await this.isAllowedToGenerateNewVersion(short, user, token);
+		const existingVersion = await this.isPermittedByToken(short, user, token);
 		existingVersion.isActive = -1;
 		this.linkRepository.save(existingVersion).then();
 
@@ -263,21 +263,32 @@ export class LinkService {
 		return link !== undefined;
 	}
 
-	private async isAllowedToGenerateNewVersion(short: string, user: User, token: string) {
+	private async isPermittedByToken(short: string, user: User, token: string) {
 		const _link = await this.getLinkByShort(short);
 
-		if (_link.creatorId !== user.sub) {
-			if (!await this.permissionService.permissionExists(token)) {
-				throw new InsufficientPermissionsException(null,
-					null, [
-						{
-							'attribute': 'short',
-							'value': short,
-							'message': 'Specified link is not in your ownership',
-						},
-					]);
+		const errors = [];
+
+		const allowedByUserId = _link.creatorId === user?.sub;
+		let allowedByToken = false;
+
+		if (!allowedByUserId) {
+			if (token) {
+				allowedByToken = await this.permissionService.permissionExists(token);
 			}
 		}
+
+		if (!allowedByUserId && !allowedByToken) {
+			if ((!allowedByUserId && user) || (user && !allowedByToken)) {
+				errors.push('user');
+			}
+
+			if (!allowedByToken && token) { // only apply if token even existed
+				errors.push('token');
+			}
+
+			throw new InsufficientPermissionsException(null, null, errors);
+		}
+
 
 		return _link;
 	}
