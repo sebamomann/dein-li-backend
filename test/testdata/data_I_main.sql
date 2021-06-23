@@ -85,9 +85,14 @@ INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) V
 ('3941d3af-f7ec-4674-8ba6-4d596b0c6844', 'test-getversions-short', 'https://version1.dein.li', -1, '2021-02-08 18:56:35.000000', '15056b7c-4d16-4ed1-8862-3e7ae57a0819'),
 ('88e11b8f-1052-49aa-afe4-52e65e41f27e', 'test-getversions-short', 'https://version2.dein.li', -1, '2021-02-09 18:56:35.000000', '15056b7c-4d16-4ed1-8862-3e7ae57a0819'),
 ('cc5701aa-7116-4ca9-a310-b2703440a70e', 'test-getversions-short', 'https://version3.dein.li', -1, '2021-02-10 18:57:53.000000', '15056b7c-4d16-4ed1-8862-3e7ae57a0819'),
-('d374ce65-6672-4227-bc9f-38ada6ff5664', 'test-getversions-short', 'https://version4.dein.li', 1, '2021-02-11 18:57:53.000000', '15056b7c-4d16-4ed1-8862-3e7ae57a0819');
+('d374ce65-6672-4227-bc9f-38ada6ff5664', 'test-getversions-short', 'https://version4.dein.li', 1, '2021-02-11 18:57:53.000000', '15056b7c-4d16-4ed1-8862-3e7ae57a0819'),
+('254ae520-6b97-42ec-ac06-14414df5e4e7', 'test-getversions-missingpermissions-short', 'https://version1.dein.li', 1, '2021-02-08 18:56:35.000000', NULL),
+('e54b01d7-e5f1-443f-9a47-619c12463ea6', 'test-getversions-bypermission-short', 'https://version1.dein.li', 1, '2021-02-08 18:56:35.000000', NULL);
 COMMIT;
 
+INSERT INTO `link_permission` (`id`, `token`, `iat`, `linkId`, `comment`, `expiration`) VALUES
+('d9829683-cf1e-44af-8d17-901974ff9a44', 'FF3wNlsszCRqSlwczVXwZUS3ZlUIikdF', '2021-02-13 19:04:51.000000', '8420bb51-adb6-4766-aeed-c00d4b0cf657', 'test-updatepermission-bypermission-comment', '2021-02-13 19:04:51.000000');
+COMMIT;
 
 
 

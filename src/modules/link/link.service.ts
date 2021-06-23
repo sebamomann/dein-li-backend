@@ -82,7 +82,7 @@ export class LinkService {
 				]);
 		}
 
-		const existingVersion = await this.isPermittedByToken(short, user, token);
+		const existingVersion = await this.isPermittedByUserOrToken(short, user, token);
 		existingVersion.isActive = -1;
 		this.linkRepository.save(existingVersion).then();
 
@@ -155,15 +155,13 @@ export class LinkService {
 	// 403 forbidden
 
 	public async getVersions(short: string, user: User, token: string) {
-		let links = await this.linkRepository.find({where: {short, creatorId: user.sub}, order: {iat: 'DESC'}});
+		let links = await this.linkRepository.find({where: {short}, order: {iat: 'DESC'}});
 
 		if (links.length <= 0) {
-			throw new EntityNotFoundException(null, null, {
-				attribute: 'short',
-				in: 'path',
-				value: short,
-			});
+			throw new EntityNotFoundException(null, null, 'link');
 		}
+
+		await this.isPermittedByUserOrToken(links[0].short, user, token);
 
 		links = links.map((mLink) => {
 			return linkMapper.basic(mLink);
@@ -263,7 +261,7 @@ export class LinkService {
 		return link !== undefined;
 	}
 
-	private async isPermittedByToken(short: string, user: User, token: string) {
+	private async isPermittedByUserOrToken(short: string, user: User, token: string) {
 		const _link = await this.getLinkByShort(short);
 
 		const errors = [];

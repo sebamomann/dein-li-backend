@@ -106,8 +106,6 @@ export class LinkController {
 		           )
 		           .catch(
 			           (err) => {
-				           console.log(err);
-
 				           if (err instanceof EntityNotFoundException) {
 					           if (err.data === 'link') {
 						           throw new EntityNotFoundException(null, null, {
@@ -146,18 +144,21 @@ export class LinkController {
 	}
 
 	@Get(':short/versions')
-	@UseGuards(AuthGuard)
+	@UseGuards(AuthOptGuard)
 	getVersions(@Usr() user: User,
 	            @Headers('x-link-permission') token: string,
 	            @Param('short') short: string,
 	            @Res() res: Response) {
 		return this.linkService
 		           .getVersions(short, user, token)
-		           .then(tLink => {
-			           res.status(HttpStatus.OK).json(tLink);
-		           })
+		           .then(
+			           tLink => {
+				           res.status(HttpStatus.OK).json(tLink);
+			           })
 		           .catch(
 			           (err) => {
+				           console.log(err);
+			           	
 				           if (err instanceof EntityNotFoundException) {
 					           if (err.data === 'link') {
 						           throw new EntityNotFoundException(null, null, {
@@ -166,6 +167,28 @@ export class LinkController {
 							           'value': short,
 						           });
 					           }
+				           } else if (err instanceof InsufficientPermissionsException) {
+					           const errorObjects = [];
+
+					           if (err.data.includes('user')) {
+						           errorObjects.push({
+							           'in': 'path',
+							           'attribute': 'short',
+							           'value': short,
+							           'message': 'Specified link is not in your ownership',
+						           });
+					           }
+
+					           if (err.data.includes('token')) {
+						           errorObjects.push({
+							           'in': 'header',
+							           'attribute': 'x-link-permission',
+							           'value': token,
+							           'message': 'Specified token provides no permission for the requested link',
+						           });
+					           }
+
+					           throw new InsufficientPermissionsException(null, null, errorObjects);
 				           }
 
 				           throw err;
