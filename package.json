@@ -46,7 +46,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
-    "typeorm": "^0.2.29",
+    "typeorm": "^0.2.41",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
