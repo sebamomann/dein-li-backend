@@ -10,7 +10,6 @@ info:
 servers:
   - url: 'https://api.dein.li'
     description: Main Server
-
 tags:
   - name: Link
     description: Everything connected to links
@@ -131,7 +130,7 @@ components:
           description: Link to create permission for
           required:
             - short
-          properties:
+          properties: 
             short:
               type: string
               description: Unique short of link
@@ -143,7 +142,7 @@ components:
           format: date-time
           description: Date of permission expiration
       example:
-        link:
+        link: 
           short: myShort
         comment: 'Permission for John Doe'
     PermissionUpdateObject:
@@ -159,7 +158,7 @@ components:
           format: date-time
           description: Date of permission expiration
       example:
-        comment: 'Permission for John Doe'
+        comment: 'Permission for John Doe'    
         expiration: '2021-01-09T12:05:12.297Z'
     LinkCreateVersionObject:
       type: object
@@ -219,6 +218,9 @@ components:
         token:
           type: string
           description: Token for API authentication
+        original:
+          type: string
+          description: Original full URL the user gets redirected on short call
         expiration:
           type: string
           format: date-time
