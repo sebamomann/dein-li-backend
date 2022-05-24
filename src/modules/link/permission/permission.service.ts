@@ -10,6 +10,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {IPermissionCreationDTO} from './IPermissionCreationDTO.interface';
 import {PermissionMapper} from './permission.mapper';
+import {Link} from '../link.entity';
 
 @Injectable()
 export class PermissionService {
@@ -120,7 +121,27 @@ export class PermissionService {
 		return await this.linkPermissionRepo.findOne({where: {token: token}}) !== undefined;
 	}
 
+	public async updatePermissions(from: Link, to: number) {
+		const permissions = await this.linkPermissionRepo.find({where: {link: from}});
+		console.log(permissions);
+		await this.createDuplicateWithNewId(permissions, to);
+	}
+
 	private async getPermission(token: string) {
 		return await this.linkPermissionRepo.findOne({where: {token: token}});
 	}
+
+	private async createDuplicateWithNewId(permissions: LinkPermission[], to: number) {
+		for (const perm of permissions) {
+			const lp = new LinkPermission();
+
+			lp.expiration = perm.expiration;
+			lp.link = {id: to} as Link;
+			lp.token = perm.token;
+			lp.comment = perm.token;
+
+			await this.linkPermissionRepo.save(lp);
+		}
+	}
 }
+

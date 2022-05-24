@@ -91,6 +91,7 @@ export class LinkService {
 		linkToDb.original = link.original;
 
 		linkToDb = await this.linkRepository.save(linkToDb);
+		await this.permissionService.updatePermissions(existingVersion, linkToDb.id);
 
 		return linkToDb;
 	}
