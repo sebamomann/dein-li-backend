@@ -2,8 +2,6 @@
 FROM node:12-alpine as builder
 LABEL stage=intermediate
 
-RUN npm i node-prune
-
 WORKDIR /app
 
 COPY ./package.json ./
@@ -18,9 +16,6 @@ COPY . .
 RUN npm run prebuild
 RUN npm run build
 RUN npm prune --production
-
-# run node prune
-RUN node-prune
 
 # ACTUAL IMAGE
 # ACTUAL IMAGE
