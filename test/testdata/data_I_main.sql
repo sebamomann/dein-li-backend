@@ -91,7 +91,7 @@ INSERT INTO `link` (`id`, `short`, `original`, `isActive`, `iat`, `creatorId`) V
 COMMIT;
 
 INSERT INTO `link_permission` (`id`, `token`, `iat`, `linkId`, `comment`, `expiration`) VALUES
-('d9829683-cf1e-44af-8d17-901974ff9a44', 'FF3wNlsszCRqSlwczVXwZUS3ZlUIikdF', '2021-02-13 19:04:51.000000', '8420bb51-adb6-4766-aeed-c00d4b0cf657', 'test-updatepermission-bypermission-comment', '2021-02-13 19:04:51.000000');
+('e54b01d7-e5f1-443f-9a47-619c12463ea6', 'FF3wNlsszCRqSlwczVXwZUS3ZlUIikdF', '2021-02-13 19:04:51.000000', '8420bb51-adb6-4766-aeed-c00d4b0cf657', 'test-updatepermission-bypermission-comment', '2021-02-13 19:04:51.000000');
 COMMIT;
 
 
