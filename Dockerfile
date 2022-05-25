@@ -20,7 +20,7 @@ RUN npm run build
 RUN npm prune --production
 
 # run node prune
-RUN /usr/local/bin/node-prune
+RUN node-prune
 
 # ACTUAL IMAGE
 # ACTUAL IMAGE
