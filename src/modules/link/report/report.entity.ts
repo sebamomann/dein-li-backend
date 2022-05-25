@@ -1,5 +1,5 @@
-import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {Link} from "../link.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Link } from "../link.entity";
 
 @Entity()
 export class Report {
@@ -14,10 +14,10 @@ export class Report {
     @JoinColumn()
     link: Link;
 
-    @Column({nullable: false, type: "uuid"})
+    @Column({ nullable: true, type: "uuid" })
     userId: string;
 
-    @Column('smallint', {default: false})
+    @Column('smallint', { default: false })
     isConfirmation: boolean;
 
     @CreateDateColumn()

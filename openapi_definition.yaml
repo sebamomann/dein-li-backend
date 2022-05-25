@@ -656,6 +656,10 @@ paths:
               description: >
                 The `token` value returned in the response can be used as the
                 `token` parameter in `GET /permissions/{token}`.
+        '403':
+          $ref: '#/components/responses/ForbiddenInsufficientPermissions'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   '/permissions/{token}':

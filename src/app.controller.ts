@@ -1,6 +1,6 @@
-import {Controller, Get, HttpStatus, Param, Request, Res} from '@nestjs/common';
-import {LinkService} from "./modules/link/link.service";
-import {CallService} from "./modules/link/call/call.service";
+import { Controller, Get, HttpStatus, Param, Query, Request, Res } from '@nestjs/common';
+import { LinkService } from "./modules/link/link.service";
+import { CallService } from "./modules/link/call/call.service";
 
 @Controller()
 export class AppController {
@@ -10,14 +10,15 @@ export class AppController {
 
     @Get('healthcheck')
     async health(@Request() req,
-                 @Res() res) {
+        @Res() res) {
         return res.status(HttpStatus.OK).json();
     }
 
     @Get('redirect/:short')
     async redirect(@Request() req,
-                   @Param('short') short: string,
-                   @Res() res) {
+        @Param('short') short: string,
+        @Query('skip_threat') skip_threat: string,
+        @Res() res) {
         if (!short) {
             res.set('location', process.env.DOMAIN + "?success=true&type=default");
         } else if (short.endsWith("~")) {
@@ -28,7 +29,7 @@ export class AppController {
                 const link = await this.linkService.getLinkByShortAndReports(short);
 
                 if (link.isActive === 1) {
-                    if (link.reports?.length > 0) {
+                    if (link.reports?.length > 0 && !skip_threat) {
                         res.set('location', process.env.DOMAIN + "redirect?success=false&error=threat&short=" + short);
                     } else {
                         this.callService.manageLinkCall(link, 1, req.headers['user-agent']);

@@ -4,7 +4,7 @@ import {Call} from "./call.entity";
 import {CallService} from "./call.service";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Call]),],
+    imports: [TypeOrmModule.forFeature([Call])],
     providers: [CallService],
     exports: [CallService],
 })
