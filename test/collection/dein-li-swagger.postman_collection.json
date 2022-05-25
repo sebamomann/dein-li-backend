@@ -7601,6 +7601,466 @@
               ]
             },
             {
+              "name": "get links - success - (-calls)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.expect(pm.response.code).to.equal(200);\r",
+                      "});\r",
+                      "\r",
+                      "const schema = {\r",
+                      "    \"type\": \"array\",\r",
+                      "    \"items\": [\r",
+                      "        JSON.parse(pm.variables.get(\"schema_link\"))\r",
+                      "    ]\r",
+                      "};\r",
+                      "\r",
+                      "pm.test(\"Valid schema\", () => {\r",
+                      "    pm.response.to.have.jsonSchema(schema);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Correct JSON response data\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    \r",
+                      "    pm.expect(jsonData).to.eql([\r",
+                      "        {\r",
+                      "            \"id\": \"f434e6d9-0947-4573-ab0a-6da322833c20\",\r",
+                      "            \"short\": \"test-getlinks-2-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 24,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-01T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"a9bb860a-5d8d-4e54-bc3c-43eed19bd30a\",\r",
+                      "            \"short\": \"test-getlinks-5-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 23,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-04T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"4e5164ca-6603-4211-862f-e852aa098e92\",\r",
+                      "            \"short\": \"test-getlinks-4-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 23,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-03T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"5d878952-fefa-4fed-bf9a-21dd21720675\",\r",
+                      "            \"short\": \"test-getlinks-1-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 19,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2020-12-31T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"b865cc8f-4fbc-4e91-8702-4144ffed4675\",\r",
+                      "            \"short\": \"test-getlinks-3-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 11,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-02T23:00:00.000Z\"\r",
+                      "        }\r",
+                      "    ]);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/links?sort=-calls",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["links"],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "-calls"
+                    }
+                  ]
+                },
+                "description": "Returns all links that the user is allowed to see"
+              },
+              "response": [
+                {
+                  "name": "List of all links",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/links?sort=<string>&limit=<string>&offset=<string>",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["links"],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<string>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n {\n  \"id\": \"urn:uuid:8e9d2429-c5aa-057e-e5e9-41f00d6dbe5f\",\n  \"short\": \"dolor\",\n  \"original\": \"elit veniam\",\n  \"status\": \"ACTIVE\",\n  \"iat\": \"1982-11-12\",\n  \"nrOfCalls\": 23838228\n },\n {\n  \"id\": \"urn:uuid:27b75281-d508-9b43-8008-af5f50f608cc\",\n  \"short\": \"veniam enim eu occaecat nisi\",\n  \"original\": \"aliquip\",\n  \"status\": \"ACTIVE\",\n  \"iat\": \"1978-01-22\",\n  \"nrOfCalls\": 22405912\n }\n]"
+                },
+                {
+                  "name": "Missing or Invalid Authorization Header.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/links?sort=<string>&limit=<string>&offset=<string>",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["links"],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<string>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                },
+                {
+                  "name": "Internal Server Error.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/links?sort=<string>&limit=<string>&offset=<string>",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["links"],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<string>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Internal Server Error",
+                  "code": 500,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "get links - success - (+calls)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.expect(pm.response.code).to.equal(200);\r",
+                      "});\r",
+                      "\r",
+                      "const schema = {\r",
+                      "    \"type\": \"array\",\r",
+                      "    \"items\": [\r",
+                      "        JSON.parse(pm.variables.get(\"schema_link\"))\r",
+                      "    ]\r",
+                      "};\r",
+                      "\r",
+                      "pm.test(\"Valid schema\", () => {\r",
+                      "    pm.response.to.have.jsonSchema(schema);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Correct JSON response data\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    \r",
+                      "    pm.expect(jsonData).to.eql([\r",
+                      "        {\r",
+                      "            \"id\": \"b865cc8f-4fbc-4e91-8702-4144ffed4675\",\r",
+                      "            \"short\": \"test-getlinks-3-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 11,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-02T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"5d878952-fefa-4fed-bf9a-21dd21720675\",\r",
+                      "            \"short\": \"test-getlinks-1-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 19,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2020-12-31T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"a9bb860a-5d8d-4e54-bc3c-43eed19bd30a\",\r",
+                      "            \"short\": \"test-getlinks-5-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 23,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-04T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"4e5164ca-6603-4211-862f-e852aa098e92\",\r",
+                      "            \"short\": \"test-getlinks-4-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 23,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-03T23:00:00.000Z\"\r",
+                      "        },\r",
+                      "        {\r",
+                      "            \"id\": \"f434e6d9-0947-4573-ab0a-6da322833c20\",\r",
+                      "            \"short\": \"test-getlinks-2-short\",\r",
+                      "            \"original\": \"https://dein.li\",\r",
+                      "            \"nrOfCalls\": 24,\r",
+                      "            \"status\": \"ACTIVE\",\r",
+                      "            \"iat\": \"2021-01-01T23:00:00.000Z\"\r",
+                      "        }\r",
+                      "    ]);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/links?sort=+calls",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["links"],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "+calls"
+                    }
+                  ]
+                },
+                "description": "Returns all links that the user is allowed to see"
+              },
+              "response": [
+                {
+                  "name": "List of all links",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/links?sort=<string>&limit=<string>&offset=<string>",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["links"],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<string>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n {\n  \"id\": \"urn:uuid:8e9d2429-c5aa-057e-e5e9-41f00d6dbe5f\",\n  \"short\": \"dolor\",\n  \"original\": \"elit veniam\",\n  \"status\": \"ACTIVE\",\n  \"iat\": \"1982-11-12\",\n  \"nrOfCalls\": 23838228\n },\n {\n  \"id\": \"urn:uuid:27b75281-d508-9b43-8008-af5f50f608cc\",\n  \"short\": \"veniam enim eu occaecat nisi\",\n  \"original\": \"aliquip\",\n  \"status\": \"ACTIVE\",\n  \"iat\": \"1978-01-22\",\n  \"nrOfCalls\": 22405912\n }\n]"
+                },
+                {
+                  "name": "Missing or Invalid Authorization Header.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/links?sort=<string>&limit=<string>&offset=<string>",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["links"],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<string>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                },
+                {
+                  "name": "Internal Server Error.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/links?sort=<string>&limit=<string>&offset=<string>",
+                      "host": ["{{baseUrl}}"],
+                      "path": ["links"],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<string>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Internal Server Error",
+                  "code": 500,
+                  "_postman_previewlanguage": "text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "text/plain"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": ""
+                }
+              ]
+            },
+            {
               "name": "get links - success - limit 2",
               "event": [
                 {
@@ -9354,9 +9814,8 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/{{validate_createpermission_location_header}}",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["{{validate_createpermission_location_header}}"]
+                  "raw": "{{validate_createpermission_location_header}}",
+                  "host": ["{{validate_createpermission_location_header}}"]
                 }
               },
               "response": []
