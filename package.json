@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.5.1",
-    "@nestjs/common": "^7.0.0",
+    "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/passport": "^7.1.5",
@@ -47,7 +47,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
-    "typeorm": "^0.2.29",
+    "typeorm": "^0.3.21",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
