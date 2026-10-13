@@ -1,5 +1,5 @@
 # BUILDER
-FROM node:12-alpine as builder
+FROM node:22-alpine AS builder
 LABEL stage=intermediate
 
 WORKDIR /app
@@ -20,7 +20,7 @@ RUN npm run build
 RUN npm prune --production
 
 # ACTUAL IMAGE
-FROM node:12-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
