@@ -1,4 +1,6 @@
-import {CanActivate, ExecutionContext, HttpService, Injectable, UnauthorizedException} from '@nestjs/common';
+import {CanActivate, ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import {HttpService} from '@nestjs/axios';
+import {firstValueFrom} from 'rxjs';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,11 +15,11 @@ export class AuthGuard implements CanActivate {
         const url = `${process.env.KEYCLOAK_URL}auth/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`;
 
         try {
-            const response = await this.httpService.get<any>(url, {
+            const response = await firstValueFrom(this.httpService.get<any>(url, {
                 headers: {
                     authorization: `${request.headers.authorization}`,
                 },
-            }).toPromise();
+            }));
 
             request.user = response.data;
 

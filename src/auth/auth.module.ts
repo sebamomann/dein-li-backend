@@ -1,4 +1,5 @@
-import {HttpModule, Module} from "@nestjs/common";
+import {Module} from "@nestjs/common";
+import {HttpModule} from "@nestjs/axios";
 import {AuthGuard} from "./auth.gurad";
 import {AuthOptGuard} from "./auth-opt.gurad";
 

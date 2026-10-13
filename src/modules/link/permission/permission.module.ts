@@ -1,4 +1,5 @@
-import {forwardRef, HttpModule, Module} from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
+import {HttpModule} from '@nestjs/axios';
 import {PermissionController} from './permission.controller';
 import {PermissionService} from './permission.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
