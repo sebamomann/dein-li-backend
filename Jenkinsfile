@@ -167,6 +167,7 @@ pipeline {
                             --network ${app_network} \\
                             --restart unless-stopped \\
                             -p 127.0.0.1:${app_port}:3000 \\
+                            -e TZ=Europe/Berlin \\
                             --mount type=bind,src=${app_env_file},dst=/app/.env,readonly \\
                             ${api_image_name}
 

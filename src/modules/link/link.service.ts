@@ -119,7 +119,9 @@ export class LinkService {
 				short,
 				isActive: 1,
 			},
-			relations: ['reports'],
+			relations: {
+                reports: true
+            },
 		});
 
 		if (!link) {
