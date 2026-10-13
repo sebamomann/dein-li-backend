@@ -106,7 +106,7 @@ export class LinkService {
 			},
 		});
 
-		if (link === undefined) {
+		if (!link) {
 			throw new EntityNotFoundException(null, null, 'link');
 		}
 
@@ -122,7 +122,7 @@ export class LinkService {
 			relations: ['reports'],
 		});
 
-		if (link === undefined) {
+		if (!link) {
 			throw new EntityNotFoundException(null, null, 'link');
 		}
 
@@ -259,7 +259,7 @@ export class LinkService {
 			},
 		});
 
-		return link !== undefined;
+		return !!link;
 	}
 
 	private async isPermittedByUserOrToken(short: string, user: User, token: string) {
@@ -301,8 +301,8 @@ export class LinkService {
 		                     .where('link.creatorId = \'' + user.sub + '\'') // okay bcs it comes from jwt
 		                     .orderBy('link.iat', order)
 		                     .groupBy('short')
-		                     .limit(limit ? limit : null)
-		                     .offset(offset ? offset : 0);
+		                     .limit(limit ? limit : undefined)
+		                     .offset(offset ? offset : undefined);
 
 		const res = await this.linkRepository
 		                      .createQueryBuilder('link')
@@ -322,7 +322,7 @@ export class LinkService {
 		//     })
 		//     .orderBy({iat: order})
 		//     .groupBy("short")
-		//     .limit(limit ? limit : null)
+		//     .limit(limit ? limit : undefined)
 		//     .offset(offset ? offset : 0)
 		//     .getRawMany();
 	}
@@ -338,8 +338,8 @@ export class LinkService {
 		                     .addOrderBy('link.iat', order)
 		                     .addOrderBy('link.short', order)
 		                     .groupBy('short')
-		                     .limit(limit ? limit : null)
-		                     .offset(offset ? offset : 0);
+		                     .limit(limit ? limit : undefined)
+		                     .offset(offset ? offset : undefined);
 
 		const res = await this.linkRepository
 		                      .createQueryBuilder('link')
@@ -361,8 +361,8 @@ export class LinkService {
 		                     .where('link.creatorId = \'' + user.sub + '\'') // okay bcs it comes from jwt
 		                     .andWhere('link.isActive = ' + 1)
 		                     .groupBy('short')
-		                     .limit(limit ? limit : null)
-		                     .offset(offset ? offset : 0);
+		                     .limit(limit ? limit : undefined)
+		                     .offset(offset ? offset : undefined);
 
 		return await this.linkRepository
 		                 .createQueryBuilder('link')

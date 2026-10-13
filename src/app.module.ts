@@ -3,6 +3,7 @@ import {AppController} from './app.controller';
 import {AppService} from './app.service';
 
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {dataSourceOptions} from './data-source.options';
 import {UserModule} from "./user/user.module";
 import {LinkModule} from "./modules/link/link.module";
 import {CallModule} from "./modules/link/call/call.module";
@@ -21,7 +22,7 @@ const _mail = process.env.MAIL_DEINLI;
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot(),
+        TypeOrmModule.forRoot(dataSourceOptions),
         MailerModule.forRoot({
             transport: 'smtps://' + _mail + ':' + _password + '@cp.dankoe.de',
             defaults: {

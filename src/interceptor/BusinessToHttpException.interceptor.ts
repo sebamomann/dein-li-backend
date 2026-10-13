@@ -40,7 +40,9 @@ export class BusinessToHttpExceptionInterceptor implements NestInterceptor {
                             throw new UnprocessableEntityException(exception.parse());
                         } else {
                             const id = GeneratorUtil.makeid(10);
-                            console.log(`[${(new Date()).toDateString()} ${(new Date()).toTimeString()}] Code: ${id} - ${JSON.stringify(exception)}`);
+                            // Error instances stringify to {} - log the stack so the code is traceable
+                            const detail = exception instanceof Error ? (exception.stack ?? exception.message) : JSON.stringify(exception);
+                            console.log(`[${(new Date()).toDateString()} ${(new Date()).toTimeString()}] Code: ${id} - ${detail}`);
 
                             const error: any = {};
 

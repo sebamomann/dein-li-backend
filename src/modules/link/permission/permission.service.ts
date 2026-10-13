@@ -118,11 +118,11 @@ export class PermissionService {
 	}
 
 	public async permissionExists(token: string) {
-		return await this.linkPermissionRepo.findOne({where: {token: token}}) !== undefined;
+		return !!(await this.linkPermissionRepo.findOne({where: {token: token}}));
 	}
 
 	public async updatePermissions(from: Link, to: number) {
-		const permissions = await this.linkPermissionRepo.find({where: {link: from}});
+		const permissions = await this.linkPermissionRepo.find({where: {link: {id: from.id}}});
 		console.log(permissions);
 		await this.createDuplicateWithNewId(permissions, to);
 	}
